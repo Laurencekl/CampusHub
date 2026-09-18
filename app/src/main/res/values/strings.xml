@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">CampusHub</string>
+    <string name="cadastro_titulo">Crie sua conta</string>
+    <string name="cadastro_subtitulo">Cadastre-se para acompanhar os eventos da universidade.</string>
+    <string name="nome">Nome completo</string>
+    <string name="email">E-mail</string>
+    <string name="senha">Senha</string>
+    <string name="confirmar_senha">Confirmar senha</string>
+    <string name="cadastrar">Criar conta</string>
+    <string name="campo_obrigatorio">Preencha este campo</string>
+    <string name="email_invalido">Digite um e-mail válido</string>
+    <string name="senha_curta">A senha deve ter pelo menos 6 caracteres</string>
+    <string name="senhas_diferentes">As senhas não são iguais</string>
+    <string name="conta_criada">Conta criada com sucesso!</string>
+    <string name="erro_cadastro">Não foi possível criar a conta</string>
 </resources>

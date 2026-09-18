@@ -1,3 +1,10 @@
 <resources>
-    <style name="Theme.CampusHub" parent="Theme.Material3.DayNight.NoActionBar" />
+    <style name="Theme.CampusHub" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/azul_principal</item>
+        <item name="colorOnPrimary">@color/branco</item>
+        <item name="colorSecondary">@color/azul_secundario</item>
+        <item name="android:statusBarColor">@color/azul_escuro</item>
+        <item name="android:navigationBarColor">@color/branco</item>
+        <item name="android:fontFamily">sans</item>
+    </style>
 </resources>
