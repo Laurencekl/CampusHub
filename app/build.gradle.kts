@@ -1,10 +1,6 @@
 plugins {
     id("com.android.application")
-}
-
-// A conexão será configurada com o JSON do próprio CampusHub.
-if (file("google-services.json").exists()) {
-    apply(plugin = "com.google.gms.google-services")
+    id("com.google.gms.google-services")
 }
 
 android {
