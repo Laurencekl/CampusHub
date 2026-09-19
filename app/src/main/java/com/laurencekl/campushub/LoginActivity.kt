@@ -41,6 +41,14 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        if (autenticacao.currentUser != null) {
+            abrirTelaInicial()
+        }
+    }
+
     private fun realizarLogin() {
         val email = editEmail.text.toString().trim()
         val senha = editSenha.text.toString()

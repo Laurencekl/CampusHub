@@ -23,4 +23,5 @@
     <string name="inicio_subtitulo">Bem-vindo ao CampusHub</string>
     <string name="inicio_mensagem">Aqui você encontrará os próximos eventos da universidade.</string>
     <string name="usuario">Aluno</string>
+    <string name="sair">Sair</string>
 </resources>

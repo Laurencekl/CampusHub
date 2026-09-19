@@ -1,6 +1,8 @@
 package com.laurencekl.campushub
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -13,11 +15,21 @@ class HomeActivity : AppCompatActivity() {
 
         val textoBoasVindas = findViewById<TextView>(R.id.textoBoasVindas)
         val textoEmail = findViewById<TextView>(R.id.textoEmailUsuario)
+        val botaoSair = findViewById<Button>(R.id.botaoSair)
 
-        val usuario = FirebaseAuth.getInstance().currentUser
+        val autenticacao = FirebaseAuth.getInstance()
+        val usuario = autenticacao.currentUser
         val nome = usuario?.displayName ?: getString(R.string.usuario)
 
         textoBoasVindas.text = getString(R.string.inicio_titulo, nome)
         textoEmail.text = usuario?.email.orEmpty()
+
+        botaoSair.setOnClickListener {
+            autenticacao.signOut()
+
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        }
     }
 }
