@@ -13,4 +13,14 @@
     <string name="senhas_diferentes">As senhas não são iguais</string>
     <string name="conta_criada">Conta criada com sucesso!</string>
     <string name="erro_cadastro">Não foi possível criar a conta</string>
+    <string name="login_titulo">Bem-vindo de volta</string>
+    <string name="login_subtitulo">Entre para acompanhar os eventos do CampusHub.</string>
+    <string name="entrar">Entrar</string>
+    <string name="nao_tem_conta">Ainda não tem uma conta? Cadastre-se</string>
+    <string name="ja_tem_conta">Já tem uma conta? Entre aqui</string>
+    <string name="erro_login">Não foi possível entrar</string>
+    <string name="inicio_titulo">Olá, %1$s!</string>
+    <string name="inicio_subtitulo">Bem-vindo ao CampusHub</string>
+    <string name="inicio_mensagem">Aqui você encontrará os próximos eventos da universidade.</string>
+    <string name="usuario">Aluno</string>
 </resources>

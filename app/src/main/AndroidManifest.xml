@@ -9,8 +9,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CampusHub">
 
+        <activity android:name=".HomeActivity" />
+        <activity android:name=".CadastroActivity" />
         <activity
-            android:name=".CadastroActivity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

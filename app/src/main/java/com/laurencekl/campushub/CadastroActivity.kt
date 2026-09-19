@@ -1,5 +1,6 @@
 package com.laurencekl.campushub
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
@@ -18,6 +19,7 @@ class CadastroActivity : AppCompatActivity() {
     private lateinit var editSenha: EditText
     private lateinit var editConfirmarSenha: EditText
     private lateinit var botaoCadastrar: Button
+    private lateinit var botaoIrParaLogin: Button
     private lateinit var progressoCadastro: ProgressBar
 
     private val autenticacao = FirebaseAuth.getInstance()
@@ -31,10 +33,15 @@ class CadastroActivity : AppCompatActivity() {
         editSenha = findViewById(R.id.editSenha)
         editConfirmarSenha = findViewById(R.id.editConfirmarSenha)
         botaoCadastrar = findViewById(R.id.botaoCadastrar)
+        botaoIrParaLogin = findViewById(R.id.botaoIrParaLogin)
         progressoCadastro = findViewById(R.id.progressoCadastro)
 
         botaoCadastrar.setOnClickListener {
             cadastrarUsuario()
+        }
+
+        botaoIrParaLogin.setOnClickListener {
+            finish()
         }
     }
 
@@ -104,8 +111,8 @@ class CadastroActivity : AppCompatActivity() {
         autenticacao.currentUser?.updateProfile(alteracaoPerfil)
             ?.addOnCompleteListener {
                 mostrarCarregamento(false)
-                limparCampos()
                 Toast.makeText(this, R.string.conta_criada, Toast.LENGTH_LONG).show()
+                abrirTelaInicial()
             }
     }
 
@@ -114,10 +121,9 @@ class CadastroActivity : AppCompatActivity() {
         botaoCadastrar.isEnabled = !carregando
     }
 
-    private fun limparCampos() {
-        editNome.text.clear()
-        editEmail.text.clear()
-        editSenha.text.clear()
-        editConfirmarSenha.text.clear()
+    private fun abrirTelaInicial() {
+        val intent = Intent(this, HomeActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
