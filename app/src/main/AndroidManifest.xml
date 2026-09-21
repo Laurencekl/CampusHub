@@ -9,6 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CampusHub">
 
+        <activity android:name=".RecuperarSenhaActivity" />
         <activity android:name=".HomeActivity" />
         <activity android:name=".CadastroActivity" />
         <activity

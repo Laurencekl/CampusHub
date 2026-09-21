@@ -24,4 +24,11 @@
     <string name="inicio_mensagem">Aqui você encontrará os próximos eventos da universidade.</string>
     <string name="usuario">Aluno</string>
     <string name="sair">Sair</string>
+    <string name="esqueci_senha">Esqueci minha senha</string>
+    <string name="recuperar_titulo">Recuperar senha</string>
+    <string name="recuperar_subtitulo">Informe seu e-mail para receber o link de redefinição.</string>
+    <string name="enviar_link">Enviar link</string>
+    <string name="voltar_login">Voltar para o login</string>
+    <string name="email_recuperacao_enviado">E-mail de recuperação enviado!</string>
+    <string name="erro_recuperacao">Não foi possível enviar o e-mail</string>
 </resources>

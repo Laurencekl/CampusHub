@@ -16,6 +16,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var editEmail: EditText
     private lateinit var editSenha: EditText
     private lateinit var botaoEntrar: Button
+    private lateinit var botaoEsqueciSenha: Button
     private lateinit var botaoIrParaCadastro: Button
     private lateinit var progressoLogin: ProgressBar
 
@@ -28,11 +29,17 @@ class LoginActivity : AppCompatActivity() {
         editEmail = findViewById(R.id.editEmailLogin)
         editSenha = findViewById(R.id.editSenhaLogin)
         botaoEntrar = findViewById(R.id.botaoEntrar)
+        botaoEsqueciSenha = findViewById(R.id.botaoEsqueciSenha)
         botaoIrParaCadastro = findViewById(R.id.botaoIrParaCadastro)
         progressoLogin = findViewById(R.id.progressoLogin)
 
         botaoEntrar.setOnClickListener {
             realizarLogin()
+        }
+
+        botaoEsqueciSenha.setOnClickListener {
+            val intent = Intent(this, RecuperarSenhaActivity::class.java)
+            startActivity(intent)
         }
 
         botaoIrParaCadastro.setOnClickListener {

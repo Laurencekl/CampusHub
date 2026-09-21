@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:text="@string/login_titulo"
+            android:text="@string/recuperar_titulo"
             android:textColor="@color/texto_principal"
             android:textSize="26sp"
             android:textStyle="bold" />
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="24dp"
-            android:text="@string/login_subtitulo"
+            android:text="@string/recuperar_subtitulo"
             android:textColor="@color/texto_secundario"
             android:textSize="16sp" />
 
@@ -47,56 +47,32 @@
             app:boxBackgroundMode="outline">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editEmailLogin"
+                android:id="@+id/editEmailRecuperacao"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:hint="@string/senha"
-            app:boxBackgroundMode="outline"
-            app:endIconMode="password_toggle">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editSenhaLogin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
-
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/botaoEsqueciSenha"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:text="@string/esqueci_senha" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/botaoEntrar"
+            android:id="@+id/botaoEnviarLink"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/entrar"
+            android:layout_marginTop="24dp"
+            android:text="@string/enviar_link"
             android:textSize="16sp"
             app:cornerRadius="12dp" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/botaoIrParaCadastro"
+            android:id="@+id/botaoVoltarLogin"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/nao_tem_conta" />
+            android:text="@string/voltar_login" />
 
         <ProgressBar
-            android:id="@+id/progressoLogin"
+            android:id="@+id/progressoRecuperacao"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
