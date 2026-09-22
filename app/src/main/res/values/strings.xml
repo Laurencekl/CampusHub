@@ -37,4 +37,10 @@
     <string name="perfil_nome">Nome</string>
     <string name="perfil_email">E-mail</string>
     <string name="voltar">Voltar</string>
+    <string name="editar_perfil">Editar perfil</string>
+    <string name="editar_perfil_titulo">Editar perfil</string>
+    <string name="editar_perfil_subtitulo">Altere o nome exibido na sua conta.</string>
+    <string name="salvar_alteracoes">Salvar alterações</string>
+    <string name="perfil_atualizado">Perfil atualizado com sucesso!</string>
+    <string name="erro_atualizar_perfil">Não foi possível atualizar o perfil</string>
 </resources>
