@@ -43,4 +43,11 @@
     <string name="salvar_alteracoes">Salvar alterações</string>
     <string name="perfil_atualizado">Perfil atualizado com sucesso!</string>
     <string name="erro_atualizar_perfil">Não foi possível atualizar o perfil</string>
+    <string name="ver_eventos">Ver eventos</string>
+    <string name="eventos_titulo">Eventos disponíveis</string>
+    <string name="eventos_subtitulo">Confira as próximas atividades da universidade.</string>
+    <string name="carregando_eventos">Carregando eventos...</string>
+    <string name="nenhum_evento">Nenhum evento disponível.</string>
+    <string name="erro_carregar_eventos">Não foi possível carregar os eventos.</string>
+    <string name="eventos_encontrados">%1$d eventos encontrados</string>
 </resources>

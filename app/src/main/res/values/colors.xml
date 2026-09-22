@@ -2,6 +2,8 @@
     <color name="azul_principal">#1E5AA8</color>
     <color name="azul_secundario">#3478C8</color>
     <color name="azul_escuro">#153E75</color>
+    <color name="azul_cabecalho_claro">#D9E9FF</color>
+    <color name="azul_borda">#D4E3F7</color>
     <color name="fundo_claro">#F4F7FC</color>
     <color name="texto_principal">#172033</color>
     <color name="texto_secundario">#5D687A</color>
