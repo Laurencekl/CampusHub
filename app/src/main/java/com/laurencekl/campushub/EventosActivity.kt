@@ -1,5 +1,6 @@
 package com.laurencekl.campushub
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ListView
@@ -17,6 +18,7 @@ class EventosActivity : AppCompatActivity() {
         val listaEventos = findViewById<ListView>(R.id.listaEventos)
         val textoStatus = findViewById<TextView>(R.id.textoStatusEventos)
         val dadosDaLista = mutableListOf<HashMap<String, String>>()
+        val eventosDaLista = mutableListOf<Evento>()
 
         val adaptador = SimpleAdapter(
             this,
@@ -39,6 +41,9 @@ class EventosActivity : AppCompatActivity() {
                     documento.toObject(Evento::class.java).copy(id = documento.id)
                 }.sortedBy { it.titulo }
 
+                eventosDaLista.clear()
+                eventosDaLista.addAll(eventos)
+
                 eventos.forEach { evento ->
                     dadosDaLista.add(
                         hashMapOf(
@@ -59,6 +64,20 @@ class EventosActivity : AppCompatActivity() {
             .addOnFailureListener {
                 textoStatus.text = getString(R.string.erro_carregar_eventos)
             }
+
+        listaEventos.setOnItemClickListener { _, _, position, _ ->
+            val eventoSelecionado = eventosDaLista[position]
+            val intent = Intent(this, DetalhesEventoActivity::class.java)
+
+            intent.putExtra("eventoId", eventoSelecionado.id)
+            intent.putExtra("titulo", eventoSelecionado.titulo)
+            intent.putExtra("descricao", eventoSelecionado.descricao)
+            intent.putExtra("data", eventoSelecionado.data)
+            intent.putExtra("horario", eventoSelecionado.horario)
+            intent.putExtra("local", eventoSelecionado.local)
+
+            startActivity(intent)
+        }
 
         findViewById<Button>(R.id.botaoVoltarEventos).setOnClickListener {
             finish()

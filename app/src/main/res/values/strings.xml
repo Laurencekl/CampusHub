@@ -50,4 +50,12 @@
     <string name="nenhum_evento">Nenhum evento disponível.</string>
     <string name="erro_carregar_eventos">Não foi possível carregar os eventos.</string>
     <string name="eventos_encontrados">%1$d eventos encontrados</string>
+    <string name="detalhes_evento_titulo">Detalhes do evento</string>
+    <string name="detalhes_evento_subtitulo">Confira todas as informações antes de se inscrever.</string>
+    <string name="data_evento">Data</string>
+    <string name="horario_evento">Horário</string>
+    <string name="local_evento">Local</string>
+    <string name="descricao_evento">Sobre o evento</string>
+    <string name="inscrever_evento">Inscrever-se</string>
+    <string name="inscricao_proxima_etapa">A inscrição será adicionada na próxima etapa.</string>
 </resources>
