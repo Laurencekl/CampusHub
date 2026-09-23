@@ -9,6 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CampusHub">
 
+        <activity android:name=".MeusEventosActivity" />
         <activity android:name=".DetalhesEventoActivity" />
         <activity android:name=".EventosActivity" />
         <activity android:name=".EditarPerfilActivity" />

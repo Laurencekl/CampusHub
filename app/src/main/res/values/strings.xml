@@ -50,6 +50,13 @@
     <string name="nenhum_evento">Nenhum evento disponível.</string>
     <string name="erro_carregar_eventos">Não foi possível carregar os eventos.</string>
     <string name="eventos_encontrados">%1$d eventos encontrados</string>
+    <string name="meus_eventos">Meus eventos</string>
+    <string name="meus_eventos_titulo">Meus eventos</string>
+    <string name="meus_eventos_subtitulo">Acompanhe os eventos em que você está inscrito.</string>
+    <string name="nenhuma_inscricao">Você ainda não está inscrito em nenhum evento.</string>
+    <string name="um_evento_inscrito">1 evento inscrito</string>
+    <string name="eventos_inscritos">%1$d eventos inscritos</string>
+    <string name="erro_carregar_inscricoes">Não foi possível carregar suas inscrições.</string>
     <string name="detalhes_evento_titulo">Detalhes do evento</string>
     <string name="detalhes_evento_subtitulo">Confira todas as informações antes de se inscrever.</string>
     <string name="data_evento">Data</string>

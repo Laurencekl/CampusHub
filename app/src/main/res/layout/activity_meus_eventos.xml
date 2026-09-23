@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundo_claro"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/azul_principal"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="22dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/meus_eventos_titulo"
+                android:textColor="@color/branco"
+                android:textSize="27sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/meus_eventos_subtitulo"
+                android:textColor="@color/azul_cabecalho_claro"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/textoStatusMeusEventos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/carregando_eventos"
+        android:textColor="@color/texto_secundario"
+        android:textSize="15sp" />
+
+    <ListView
+        android:id="@+id/listaMeusEventos"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
+        android:layout_weight="1"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="10dp"
+        android:scrollbars="none" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/botaoVoltarMeusEventos"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="@string/voltar"
+        android:textSize="16sp"
+        app:cornerRadius="12dp" />
+</LinearLayout>
