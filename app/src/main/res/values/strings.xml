@@ -57,5 +57,8 @@
     <string name="local_evento">Local</string>
     <string name="descricao_evento">Sobre o evento</string>
     <string name="inscrever_evento">Inscrever-se</string>
-    <string name="inscricao_proxima_etapa">A inscrição será adicionada na próxima etapa.</string>
+    <string name="inscrito_evento">Inscrito</string>
+    <string name="inscricao_realizada">Inscrição realizada com sucesso!</string>
+    <string name="erro_inscricao">Não foi possível realizar a inscrição.</string>
+    <string name="usuario_nao_autenticado">Entre novamente para realizar a inscrição.</string>
 </resources>
