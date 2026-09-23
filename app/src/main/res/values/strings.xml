@@ -57,8 +57,10 @@
     <string name="local_evento">Local</string>
     <string name="descricao_evento">Sobre o evento</string>
     <string name="inscrever_evento">Inscrever-se</string>
-    <string name="inscrito_evento">Inscrito</string>
+    <string name="cancelar_inscricao">Cancelar inscrição</string>
     <string name="inscricao_realizada">Inscrição realizada com sucesso!</string>
+    <string name="inscricao_cancelada">Inscrição cancelada.</string>
     <string name="erro_inscricao">Não foi possível realizar a inscrição.</string>
+    <string name="erro_cancelamento">Não foi possível cancelar a inscrição.</string>
     <string name="usuario_nao_autenticado">Entre novamente para realizar a inscrição.</string>
 </resources>

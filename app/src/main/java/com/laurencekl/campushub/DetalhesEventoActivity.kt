@@ -30,24 +30,43 @@ class DetalhesEventoActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.textoDescricaoDetalhes).text = descricao
 
         val usuario = FirebaseAuth.getInstance().currentUser
+        var inscrito = false
 
-        if (usuario != null && eventoId.isNotEmpty()) {
+        val referenciaInscricao = if (usuario != null && eventoId.isNotEmpty()) {
             FirebaseFirestore.getInstance()
                 .collection("usuarios")
                 .document(usuario.uid)
                 .collection("inscricoes")
                 .document(eventoId)
+        } else {
+            null
+        }
+
+        fun atualizarBotao() {
+            botaoInscrever.text = if (inscrito) {
+                getString(R.string.cancelar_inscricao)
+            } else {
+                getString(R.string.inscrever_evento)
+            }
+            botaoInscrever.isEnabled = true
+        }
+
+        if (referenciaInscricao != null) {
+            botaoInscrever.isEnabled = false
+
+            referenciaInscricao
                 .get()
                 .addOnSuccessListener { documento ->
-                    if (documento.exists()) {
-                        botaoInscrever.text = getString(R.string.inscrito_evento)
-                        botaoInscrever.isEnabled = false
-                    }
+                    inscrito = documento.exists()
+                    atualizarBotao()
+                }
+                .addOnFailureListener {
+                    atualizarBotao()
                 }
         }
 
         botaoInscrever.setOnClickListener {
-            if (usuario == null) {
+            if (usuario == null || referenciaInscricao == null) {
                 Toast.makeText(
                     this,
                     getString(R.string.usuario_nao_autenticado),
@@ -58,38 +77,55 @@ class DetalhesEventoActivity : AppCompatActivity() {
 
             botaoInscrever.isEnabled = false
 
-            val inscricao = hashMapOf<String, Any>(
-                "eventoId" to eventoId,
-                "titulo" to titulo,
-                "descricao" to descricao,
-                "data" to data,
-                "horario" to horario,
-                "local" to local,
-                "inscritoEm" to FieldValue.serverTimestamp()
-            )
+            if (inscrito) {
+                referenciaInscricao.delete()
+                    .addOnSuccessListener {
+                        inscrito = false
+                        atualizarBotao()
+                        Toast.makeText(
+                            this,
+                            getString(R.string.inscricao_cancelada),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    .addOnFailureListener {
+                        botaoInscrever.isEnabled = true
+                        Toast.makeText(
+                            this,
+                            getString(R.string.erro_cancelamento),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+            } else {
+                val inscricao = hashMapOf<String, Any>(
+                    "eventoId" to eventoId,
+                    "titulo" to titulo,
+                    "descricao" to descricao,
+                    "data" to data,
+                    "horario" to horario,
+                    "local" to local,
+                    "inscritoEm" to FieldValue.serverTimestamp()
+                )
 
-            FirebaseFirestore.getInstance()
-                .collection("usuarios")
-                .document(usuario.uid)
-                .collection("inscricoes")
-                .document(eventoId)
-                .set(inscricao)
-                .addOnSuccessListener {
-                    botaoInscrever.text = getString(R.string.inscrito_evento)
-                    Toast.makeText(
-                        this,
-                        getString(R.string.inscricao_realizada),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                .addOnFailureListener {
-                    botaoInscrever.isEnabled = true
-                    Toast.makeText(
-                        this,
-                        getString(R.string.erro_inscricao),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+                referenciaInscricao.set(inscricao)
+                    .addOnSuccessListener {
+                        inscrito = true
+                        atualizarBotao()
+                        Toast.makeText(
+                            this,
+                            getString(R.string.inscricao_realizada),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    .addOnFailureListener {
+                        botaoInscrever.isEnabled = true
+                        Toast.makeText(
+                            this,
+                            getString(R.string.erro_inscricao),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+            }
         }
 
         findViewById<Button>(R.id.botaoVoltarDetalhes).setOnClickListener {
