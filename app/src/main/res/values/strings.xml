@@ -67,6 +67,10 @@
     <string name="cancelar_inscricao">Cancelar inscrição</string>
     <string name="inscricao_realizada">Inscrição realizada com sucesso!</string>
     <string name="inscricao_cancelada">Inscrição cancelada.</string>
+    <string name="confirmar_cancelamento_titulo">Cancelar inscrição?</string>
+    <string name="confirmar_cancelamento_mensagem">Tem certeza de que deseja cancelar sua inscrição neste evento?</string>
+    <string name="sim_cancelar">Sim, cancelar</string>
+    <string name="nao_manter">Não</string>
     <string name="erro_inscricao">Não foi possível realizar a inscrição.</string>
     <string name="erro_cancelamento">Não foi possível cancelar a inscrição.</string>
     <string name="usuario_nao_autenticado">Entre novamente para realizar a inscrição.</string>

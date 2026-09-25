@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -75,28 +76,37 @@ class DetalhesEventoActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            botaoInscrever.isEnabled = false
-
             if (inscrito) {
-                referenciaInscricao.delete()
-                    .addOnSuccessListener {
-                        inscrito = false
-                        atualizarBotao()
-                        Toast.makeText(
-                            this,
-                            getString(R.string.inscricao_cancelada),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.confirmar_cancelamento_titulo)
+                    .setMessage(R.string.confirmar_cancelamento_mensagem)
+                    .setPositiveButton(R.string.sim_cancelar) { _, _ ->
+                        botaoInscrever.isEnabled = false
+
+                        referenciaInscricao.delete()
+                            .addOnSuccessListener {
+                                inscrito = false
+                                atualizarBotao()
+                                Toast.makeText(
+                                    this,
+                                    getString(R.string.inscricao_cancelada),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            .addOnFailureListener {
+                                botaoInscrever.isEnabled = true
+                                Toast.makeText(
+                                    this,
+                                    getString(R.string.erro_cancelamento),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                     }
-                    .addOnFailureListener {
-                        botaoInscrever.isEnabled = true
-                        Toast.makeText(
-                            this,
-                            getString(R.string.erro_cancelamento),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    .setNegativeButton(R.string.nao_manter, null)
+                    .show()
             } else {
+                botaoInscrever.isEnabled = false
+
                 val inscricao = hashMapOf<String, Any>(
                     "eventoId" to eventoId,
                     "titulo" to titulo,
