@@ -3,10 +3,12 @@ package com.laurencekl.campushub
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ListView
 import android.widget.SimpleAdapter
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import com.google.firebase.firestore.FirebaseFirestore
 
 class EventosActivity : AppCompatActivity() {
@@ -17,7 +19,9 @@ class EventosActivity : AppCompatActivity() {
 
         val listaEventos = findViewById<ListView>(R.id.listaEventos)
         val textoStatus = findViewById<TextView>(R.id.textoStatusEventos)
+        val campoPesquisa = findViewById<EditText>(R.id.campoPesquisaEventos)
         val dadosDaLista = mutableListOf<HashMap<String, String>>()
+        val todosOsEventos = mutableListOf<Evento>()
         val eventosDaLista = mutableListOf<Evento>()
 
         val adaptador = SimpleAdapter(
@@ -33,6 +37,46 @@ class EventosActivity : AppCompatActivity() {
         )
         listaEventos.adapter = adaptador
 
+        fun mostrarEventos(eventos: List<Evento>) {
+            eventosDaLista.clear()
+            eventosDaLista.addAll(eventos)
+            dadosDaLista.clear()
+
+            eventos.forEach { evento ->
+                dadosDaLista.add(
+                    hashMapOf(
+                        "titulo" to evento.titulo,
+                        "informacoes" to "${evento.data} às ${evento.horario} • ${evento.local}",
+                        "descricao" to evento.descricao
+                    )
+                )
+            }
+
+            textoStatus.text = if (eventos.isEmpty()) {
+                getString(R.string.nenhum_resultado)
+            } else {
+                getString(R.string.eventos_encontrados, eventos.size)
+            }
+            adaptador.notifyDataSetChanged()
+        }
+
+        fun filtrarEventos(texto: String) {
+            val pesquisa = texto.trim()
+            val eventosFiltrados = if (pesquisa.isEmpty()) {
+                todosOsEventos
+            } else {
+                todosOsEventos.filter { evento ->
+                    evento.titulo.contains(pesquisa, ignoreCase = true)
+                }
+            }
+
+            mostrarEventos(eventosFiltrados)
+        }
+
+        campoPesquisa.addTextChangedListener { texto ->
+            filtrarEventos(texto.toString())
+        }
+
         FirebaseFirestore.getInstance()
             .collection("eventos")
             .get()
@@ -41,25 +85,17 @@ class EventosActivity : AppCompatActivity() {
                     documento.toObject(Evento::class.java).copy(id = documento.id)
                 }.sortedBy { it.titulo }
 
-                eventosDaLista.clear()
-                eventosDaLista.addAll(eventos)
+                todosOsEventos.clear()
+                todosOsEventos.addAll(eventos)
 
-                eventos.forEach { evento ->
-                    dadosDaLista.add(
-                        hashMapOf(
-                            "titulo" to evento.titulo,
-                            "informacoes" to "${evento.data} às ${evento.horario} • ${evento.local}",
-                            "descricao" to evento.descricao
-                        )
-                    )
-                }
-
-                textoStatus.text = if (eventos.isEmpty()) {
-                    getString(R.string.nenhum_evento)
+                if (eventos.isEmpty()) {
+                    textoStatus.text = getString(R.string.nenhum_evento)
+                    eventosDaLista.clear()
+                    dadosDaLista.clear()
+                    adaptador.notifyDataSetChanged()
                 } else {
-                    getString(R.string.eventos_encontrados, eventos.size)
+                    filtrarEventos(campoPesquisa.text.toString())
                 }
-                adaptador.notifyDataSetChanged()
             }
             .addOnFailureListener {
                 textoStatus.text = getString(R.string.erro_carregar_eventos)

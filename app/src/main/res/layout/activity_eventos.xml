@@ -38,11 +38,26 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="@string/pesquisar_eventos">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/campoPesquisaEventos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
     <TextView
         android:id="@+id/textoStatusEventos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:text="@string/carregando_eventos"
         android:textColor="@color/texto_secundario"
         android:textSize="15sp" />

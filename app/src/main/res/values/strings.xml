@@ -46,8 +46,10 @@
     <string name="ver_eventos">Ver eventos</string>
     <string name="eventos_titulo">Eventos disponíveis</string>
     <string name="eventos_subtitulo">Confira as próximas atividades da universidade.</string>
+    <string name="pesquisar_eventos">Pesquisar pelo nome</string>
     <string name="carregando_eventos">Carregando eventos...</string>
     <string name="nenhum_evento">Nenhum evento disponível.</string>
+    <string name="nenhum_resultado">Nenhum evento encontrado.</string>
     <string name="erro_carregar_eventos">Não foi possível carregar os eventos.</string>
     <string name="eventos_encontrados">%1$d eventos encontrados</string>
     <string name="meus_eventos">Meus eventos</string>
