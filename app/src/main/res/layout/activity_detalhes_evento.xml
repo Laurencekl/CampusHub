@@ -156,6 +156,16 @@
             app:cornerRadius="12dp" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/botaoAdicionarCalendario"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/adicionar_calendario"
+            android:textSize="16sp"
+            app:cornerRadius="12dp" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/botaoVoltarDetalhes"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="match_parent"

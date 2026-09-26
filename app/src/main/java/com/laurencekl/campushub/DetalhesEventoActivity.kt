@@ -2,6 +2,7 @@ package com.laurencekl.campushub
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.CalendarContract
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -10,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class DetalhesEventoActivity : AppCompatActivity() {
 
@@ -159,6 +162,47 @@ class DetalhesEventoActivity : AppCompatActivity() {
                     getString(R.string.compartilhar_evento)
                 )
             )
+        }
+
+        findViewById<Button>(R.id.botaoAdicionarCalendario).setOnClickListener {
+            val formatoData = SimpleDateFormat(
+                "dd/MM/yyyy HH:mm",
+                Locale.forLanguageTag("pt-BR")
+            )
+            formatoData.isLenient = false
+
+            val inicioEvento = formatoData.parse("$data $horario")?.time
+
+            if (inicioEvento == null) {
+                Toast.makeText(
+                    this,
+                    getString(R.string.erro_abrir_calendario),
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            val intentCalendario = Intent(Intent.ACTION_INSERT).apply {
+                this.data = CalendarContract.Events.CONTENT_URI
+                putExtra(CalendarContract.Events.TITLE, titulo)
+                putExtra(CalendarContract.Events.DESCRIPTION, descricao)
+                putExtra(CalendarContract.Events.EVENT_LOCATION, local)
+                putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, inicioEvento)
+                putExtra(
+                    CalendarContract.EXTRA_EVENT_END_TIME,
+                    inicioEvento + 60 * 60 * 1000
+                )
+            }
+
+            if (intentCalendario.resolveActivity(packageManager) != null) {
+                startActivity(intentCalendario)
+            } else {
+                Toast.makeText(
+                    this,
+                    getString(R.string.erro_abrir_calendario),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         findViewById<Button>(R.id.botaoVoltarDetalhes).setOnClickListener {

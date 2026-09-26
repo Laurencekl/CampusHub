@@ -71,6 +71,8 @@
     <string name="inscrever_evento">Inscrever-se</string>
     <string name="compartilhar_evento">Compartilhar evento</string>
     <string name="mensagem_compartilhar_evento">Confira este evento no CampusHub:\n\n%1$s\nData: %2$s\nHorário: %3$s\nLocal: %4$s</string>
+    <string name="adicionar_calendario">Adicionar ao calendário</string>
+    <string name="erro_abrir_calendario">Não foi possível abrir o calendário.</string>
     <string name="cancelar_inscricao">Cancelar inscrição</string>
     <string name="inscricao_realizada">Inscrição realizada com sucesso!</string>
     <string name="inscricao_cancelada">Inscrição cancelada.</string>
