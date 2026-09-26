@@ -82,7 +82,10 @@ class MeusEventosActivity : AppCompatActivity() {
             .addOnSuccessListener { documentos ->
                 val inscricoes = documentos.map { documento ->
                     documento.toObject(Evento::class.java).copy(id = documento.id)
-                }.sortedBy { it.titulo }
+                }.sortedWith(
+                    compareBy<Evento> { it.dataParaOrdenacao() }
+                        .thenBy { it.horario }
+                )
 
                 eventos.addAll(inscricoes)
 
