@@ -1,5 +1,6 @@
 package com.laurencekl.campushub
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
@@ -136,6 +137,28 @@ class DetalhesEventoActivity : AppCompatActivity() {
                         ).show()
                     }
             }
+        }
+
+        findViewById<Button>(R.id.botaoCompartilharEvento).setOnClickListener {
+            val mensagem = getString(
+                R.string.mensagem_compartilhar_evento,
+                titulo,
+                data,
+                horario,
+                local
+            )
+
+            val intentCompartilhar = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, mensagem)
+            }
+
+            startActivity(
+                Intent.createChooser(
+                    intentCompartilhar,
+                    getString(R.string.compartilhar_evento)
+                )
+            )
         }
 
         findViewById<Button>(R.id.botaoVoltarDetalhes).setOnClickListener {
