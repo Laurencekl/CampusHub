@@ -24,6 +24,9 @@
     <string name="inicio_mensagem">Aqui você encontrará os próximos eventos da universidade.</string>
     <string name="usuario">Aluno</string>
     <string name="sair">Sair</string>
+    <string name="confirmar_saida_titulo">Sair da conta?</string>
+    <string name="confirmar_saida_mensagem">Deseja realmente sair da sua conta?</string>
+    <string name="cancelar">Cancelar</string>
     <string name="esqueci_senha">Esqueci minha senha</string>
     <string name="recuperar_titulo">Recuperar senha</string>
     <string name="recuperar_subtitulo">Informe seu e-mail para receber o link de redefinição.</string>
