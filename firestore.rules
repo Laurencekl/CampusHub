@@ -4,7 +4,16 @@ service cloud.firestore {
   match /databases/{database}/documents {
     match /eventos/{eventoId} {
       allow read: if request.auth != null;
-      allow write: if false;
+      allow create, delete: if false;
+      allow update: if request.auth != null
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['inscritos'])
+        && request.resource.data.inscritos is int
+        && request.resource.data.inscritos >= 0
+        && request.resource.data.inscritos <= resource.data.limiteVagas
+        && (
+          request.resource.data.inscritos == resource.data.inscritos + 1
+          || request.resource.data.inscritos == resource.data.inscritos - 1
+        );
     }
 
     match /usuarios/{userId}/inscricoes/{eventoId} {

@@ -67,6 +67,9 @@
     <string name="data_evento">Data</string>
     <string name="horario_evento">Horário</string>
     <string name="local_evento">Local</string>
+    <string name="vagas_evento">Vagas</string>
+    <string name="vagas_disponiveis">%1$d de %2$d vagas disponíveis</string>
+    <string name="evento_lotado">Evento lotado</string>
     <string name="descricao_evento">Sobre o evento</string>
     <string name="inscrever_evento">Inscrever-se</string>
     <string name="compartilhar_evento">Compartilhar evento</string>

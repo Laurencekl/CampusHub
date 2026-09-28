@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -26,7 +27,10 @@ class DetalhesEventoActivity : AppCompatActivity() {
         val data = intent.getStringExtra("data").orEmpty()
         val horario = intent.getStringExtra("horario").orEmpty()
         val local = intent.getStringExtra("local").orEmpty()
+        var limiteVagas = intent.getLongExtra("limiteVagas", 30)
+        var quantidadeInscritos = intent.getLongExtra("inscritos", 0)
         val botaoInscrever = findViewById<Button>(R.id.botaoInscrever)
+        val textoVagas = findViewById<TextView>(R.id.textoVagasDetalhes)
 
         findViewById<TextView>(R.id.textoTituloDetalhes).text = titulo
         findViewById<TextView>(R.id.textoDataDetalhes).text = data
@@ -35,10 +39,11 @@ class DetalhesEventoActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.textoDescricaoDetalhes).text = descricao
 
         val usuario = FirebaseAuth.getInstance().currentUser
+        val bancoDados = FirebaseFirestore.getInstance()
         var inscrito = false
 
         val referenciaInscricao = if (usuario != null && eventoId.isNotEmpty()) {
-            FirebaseFirestore.getInstance()
+            bancoDados
                 .collection("usuarios")
                 .document(usuario.uid)
                 .collection("inscricoes")
@@ -47,14 +52,43 @@ class DetalhesEventoActivity : AppCompatActivity() {
             null
         }
 
-        fun atualizarBotao() {
-            botaoInscrever.text = if (inscrito) {
-                getString(R.string.cancelar_inscricao)
-            } else {
-                getString(R.string.inscrever_evento)
-            }
-            botaoInscrever.isEnabled = true
+        val referenciaEvento = if (eventoId.isNotEmpty()) {
+            bancoDados.collection("eventos").document(eventoId)
+        } else {
+            null
         }
+
+        fun atualizarVagas() {
+            val vagasDisponiveis = (limiteVagas - quantidadeInscritos).coerceAtLeast(0)
+
+            textoVagas.text = if (vagasDisponiveis == 0L) {
+                getString(R.string.evento_lotado)
+            } else {
+                getString(R.string.vagas_disponiveis, vagasDisponiveis, limiteVagas)
+            }
+        }
+
+        fun atualizarBotao() {
+            val eventoLotado = quantidadeInscritos >= limiteVagas
+
+            when {
+                inscrito -> {
+                    botaoInscrever.text = getString(R.string.cancelar_inscricao)
+                    botaoInscrever.isEnabled = true
+                }
+                eventoLotado -> {
+                    botaoInscrever.text = getString(R.string.evento_lotado)
+                    botaoInscrever.isEnabled = false
+                }
+                else -> {
+                    botaoInscrever.text = getString(R.string.inscrever_evento)
+                    botaoInscrever.isEnabled = true
+                }
+            }
+        }
+
+        atualizarVagas()
+        atualizarBotao()
 
         if (referenciaInscricao != null) {
             botaoInscrever.isEnabled = false
@@ -70,8 +104,16 @@ class DetalhesEventoActivity : AppCompatActivity() {
                 }
         }
 
+        referenciaEvento?.get()
+            ?.addOnSuccessListener { documento ->
+                limiteVagas = documento.getLong("limiteVagas") ?: 30
+                quantidadeInscritos = documento.getLong("inscritos") ?: 0
+                atualizarVagas()
+                atualizarBotao()
+            }
+
         botaoInscrever.setOnClickListener {
-            if (usuario == null || referenciaInscricao == null) {
+            if (usuario == null || referenciaInscricao == null || referenciaEvento == null) {
                 Toast.makeText(
                     this,
                     getString(R.string.usuario_nao_autenticado),
@@ -87,9 +129,26 @@ class DetalhesEventoActivity : AppCompatActivity() {
                     .setPositiveButton(R.string.sim_cancelar) { _, _ ->
                         botaoInscrever.isEnabled = false
 
-                        referenciaInscricao.delete()
+                        bancoDados.runTransaction { transacao ->
+                            val evento = transacao.get(referenciaEvento)
+                            val inscritosAtuais = evento.getLong("inscritos") ?: 0
+                            val novaQuantidade = (inscritosAtuais - 1).coerceAtLeast(0)
+
+                            if (inscritosAtuais > 0) {
+                                transacao.update(
+                                    referenciaEvento,
+                                    "inscritos",
+                                    novaQuantidade
+                                )
+                            }
+                            transacao.delete(referenciaInscricao)
+
+                            novaQuantidade
+                        }
                             .addOnSuccessListener {
                                 inscrito = false
+                                quantidadeInscritos = it
+                                atualizarVagas()
                                 atualizarBotao()
                                 Toast.makeText(
                                     this,
@@ -111,19 +170,41 @@ class DetalhesEventoActivity : AppCompatActivity() {
             } else {
                 botaoInscrever.isEnabled = false
 
-                val inscricao = hashMapOf<String, Any>(
-                    "eventoId" to eventoId,
-                    "titulo" to titulo,
-                    "descricao" to descricao,
-                    "data" to data,
-                    "horario" to horario,
-                    "local" to local,
-                    "inscritoEm" to FieldValue.serverTimestamp()
-                )
+                bancoDados.runTransaction { transacao ->
+                    val evento = transacao.get(referenciaEvento)
+                    val limiteAtual = evento.getLong("limiteVagas") ?: 30
+                    val inscritosAtuais = evento.getLong("inscritos") ?: 0
 
-                referenciaInscricao.set(inscricao)
-                    .addOnSuccessListener {
+                    if (inscritosAtuais >= limiteAtual) {
+                        throw FirebaseFirestoreException(
+                            "EVENTO_LOTADO",
+                            FirebaseFirestoreException.Code.ABORTED
+                        )
+                    }
+
+                    val novaQuantidade = inscritosAtuais + 1
+                    val inscricao = hashMapOf<String, Any>(
+                        "eventoId" to eventoId,
+                        "titulo" to titulo,
+                        "descricao" to descricao,
+                        "data" to data,
+                        "horario" to horario,
+                        "local" to local,
+                        "limiteVagas" to limiteAtual,
+                        "inscritos" to novaQuantidade,
+                        "inscritoEm" to FieldValue.serverTimestamp()
+                    )
+
+                    transacao.update(referenciaEvento, "inscritos", novaQuantidade)
+                    transacao.set(referenciaInscricao, inscricao)
+
+                    Pair(limiteAtual, novaQuantidade)
+                }
+                    .addOnSuccessListener { resultado ->
                         inscrito = true
+                        limiteVagas = resultado.first
+                        quantidadeInscritos = resultado.second
+                        atualizarVagas()
                         atualizarBotao()
                         Toast.makeText(
                             this,
@@ -131,11 +212,21 @@ class DetalhesEventoActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                    .addOnFailureListener {
-                        botaoInscrever.isEnabled = true
+                    .addOnFailureListener { erro ->
+                        if (erro.message == "EVENTO_LOTADO") {
+                            quantidadeInscritos = limiteVagas
+                            atualizarVagas()
+                            atualizarBotao()
+                        } else {
+                            botaoInscrever.isEnabled = true
+                        }
                         Toast.makeText(
                             this,
-                            getString(R.string.erro_inscricao),
+                            if (erro.message == "EVENTO_LOTADO") {
+                                getString(R.string.evento_lotado)
+                            } else {
+                                getString(R.string.erro_inscricao)
+                            },
                             Toast.LENGTH_SHORT
                         ).show()
                     }

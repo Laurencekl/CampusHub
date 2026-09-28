@@ -114,6 +114,8 @@ class EventosActivity : AppCompatActivity() {
             intent.putExtra("data", eventoSelecionado.data)
             intent.putExtra("horario", eventoSelecionado.horario)
             intent.putExtra("local", eventoSelecionado.local)
+            intent.putExtra("limiteVagas", eventoSelecionado.limiteVagas)
+            intent.putExtra("inscritos", eventoSelecionado.inscritos)
 
             startActivity(intent)
         }

@@ -6,8 +6,14 @@ data class Evento(
     val descricao: String = "",
     val data: String = "",
     val horario: String = "",
-    val local: String = ""
+    val local: String = "",
+    val limiteVagas: Long = 30,
+    val inscritos: Long = 0
 ) {
+    fun vagasDisponiveis(): Long {
+        return (limiteVagas - inscritos).coerceAtLeast(0)
+    }
+
     fun dataParaOrdenacao(): Int {
         val partes = data.split("/")
 
