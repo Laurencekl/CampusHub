@@ -32,6 +32,7 @@ class DetalhesEventoActivity : AppCompatActivity() {
         var limiteVagas = intent.getLongExtra("limiteVagas", 30)
         var quantidadeInscritos = intent.getLongExtra("inscritos", 0)
         val botaoInscrever = findViewById<Button>(R.id.botaoInscrever)
+        val botaoFavoritar = findViewById<Button>(R.id.botaoFavoritar)
         val textoVagas = findViewById<TextView>(R.id.textoVagasDetalhes)
 
         findViewById<TextView>(R.id.textoTituloDetalhes).text = titulo
@@ -44,6 +45,7 @@ class DetalhesEventoActivity : AppCompatActivity() {
         val usuario = FirebaseAuth.getInstance().currentUser
         val bancoDados = FirebaseFirestore.getInstance()
         var inscrito = false
+        var favorito = false
 
         val referenciaInscricao = if (usuario != null && eventoId.isNotEmpty()) {
             bancoDados
@@ -57,6 +59,16 @@ class DetalhesEventoActivity : AppCompatActivity() {
 
         val referenciaEvento = if (eventoId.isNotEmpty()) {
             bancoDados.collection("eventos").document(eventoId)
+        } else {
+            null
+        }
+
+        val referenciaFavorito = if (usuario != null && eventoId.isNotEmpty()) {
+            bancoDados
+                .collection("usuarios")
+                .document(usuario.uid)
+                .collection("favoritos")
+                .document(eventoId)
         } else {
             null
         }
@@ -92,6 +104,24 @@ class DetalhesEventoActivity : AppCompatActivity() {
 
         atualizarVagas()
         atualizarBotao()
+
+        if (referenciaFavorito != null) {
+            botaoFavoritar.isEnabled = false
+
+            referenciaFavorito.get()
+                .addOnSuccessListener { documento ->
+                    favorito = documento.exists()
+                    botaoFavoritar.text = if (favorito) {
+                        getString(R.string.remover_favoritos)
+                    } else {
+                        getString(R.string.favoritar_evento)
+                    }
+                    botaoFavoritar.isEnabled = true
+                }
+                .addOnFailureListener {
+                    botaoFavoritar.isEnabled = true
+                }
+        }
 
         if (referenciaInscricao != null) {
             botaoInscrever.isEnabled = false
@@ -231,6 +261,73 @@ class DetalhesEventoActivity : AppCompatActivity() {
                             } else {
                                 getString(R.string.erro_inscricao)
                             },
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+            }
+        }
+
+        botaoFavoritar.setOnClickListener {
+            if (usuario == null || referenciaFavorito == null) {
+                Toast.makeText(
+                    this,
+                    getString(R.string.usuario_nao_autenticado),
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            botaoFavoritar.isEnabled = false
+
+            if (favorito) {
+                referenciaFavorito.delete()
+                    .addOnSuccessListener {
+                        favorito = false
+                        botaoFavoritar.text = getString(R.string.favoritar_evento)
+                        botaoFavoritar.isEnabled = true
+                        Toast.makeText(
+                            this,
+                            getString(R.string.evento_desfavoritado),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    .addOnFailureListener {
+                        botaoFavoritar.isEnabled = true
+                        Toast.makeText(
+                            this,
+                            getString(R.string.erro_favorito),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+            } else {
+                val dadosFavorito = hashMapOf<String, Any>(
+                    "titulo" to titulo,
+                    "descricao" to descricao,
+                    "data" to data,
+                    "horario" to horario,
+                    "local" to local,
+                    "categoria" to categoria,
+                    "limiteVagas" to limiteVagas,
+                    "inscritos" to quantidadeInscritos,
+                    "favoritadoEm" to FieldValue.serverTimestamp()
+                )
+
+                referenciaFavorito.set(dadosFavorito)
+                    .addOnSuccessListener {
+                        favorito = true
+                        botaoFavoritar.text = getString(R.string.remover_favoritos)
+                        botaoFavoritar.isEnabled = true
+                        Toast.makeText(
+                            this,
+                            getString(R.string.evento_favoritado),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    .addOnFailureListener {
+                        botaoFavoritar.isEnabled = true
+                        Toast.makeText(
+                            this,
+                            getString(R.string.erro_favorito),
                             Toast.LENGTH_SHORT
                         ).show()
                     }

@@ -18,6 +18,7 @@ class HomeActivity : AppCompatActivity() {
         val textoEmail = findViewById<TextView>(R.id.textoEmailUsuario)
         val botaoEventos = findViewById<Button>(R.id.botaoEventos)
         val botaoMeusEventos = findViewById<Button>(R.id.botaoMeusEventos)
+        val botaoMeusFavoritos = findViewById<Button>(R.id.botaoMeusFavoritos)
         val botaoPerfil = findViewById<Button>(R.id.botaoPerfil)
         val botaoSair = findViewById<Button>(R.id.botaoSair)
 
@@ -35,6 +36,11 @@ class HomeActivity : AppCompatActivity() {
 
         botaoMeusEventos.setOnClickListener {
             val intent = Intent(this, MeusEventosActivity::class.java)
+            startActivity(intent)
+        }
+
+        botaoMeusFavoritos.setOnClickListener {
+            val intent = Intent(this, MeusFavoritosActivity::class.java)
             startActivity(intent)
         }
 
