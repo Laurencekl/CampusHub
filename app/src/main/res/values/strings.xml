@@ -50,6 +50,12 @@
     <string name="eventos_titulo">Eventos disponíveis</string>
     <string name="eventos_subtitulo">Confira as próximas atividades da universidade.</string>
     <string name="pesquisar_eventos">Pesquisar pelo nome</string>
+    <string name="filtrar_categoria">Filtrar por categoria</string>
+    <string name="todas_categorias">Todas as categorias</string>
+    <string name="categoria_tecnologia">Tecnologia</string>
+    <string name="categoria_carreira">Carreira</string>
+    <string name="categoria_cultura">Cultura</string>
+    <string name="categoria_esportes">Esportes</string>
     <string name="carregando_eventos">Carregando eventos...</string>
     <string name="nenhum_evento">Nenhum evento disponível.</string>
     <string name="nenhum_resultado">Nenhum evento encontrado.</string>

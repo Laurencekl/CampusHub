@@ -2,10 +2,14 @@ package com.laurencekl.campushub
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
 import android.widget.SimpleAdapter
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
@@ -20,9 +24,24 @@ class EventosActivity : AppCompatActivity() {
         val listaEventos = findViewById<ListView>(R.id.listaEventos)
         val textoStatus = findViewById<TextView>(R.id.textoStatusEventos)
         val campoPesquisa = findViewById<EditText>(R.id.campoPesquisaEventos)
+        val filtroCategoria = findViewById<Spinner>(R.id.filtroCategoria)
         val dadosDaLista = mutableListOf<HashMap<String, String>>()
         val todosOsEventos = mutableListOf<Evento>()
         val eventosDaLista = mutableListOf<Evento>()
+        val categorias = listOf(
+            getString(R.string.todas_categorias),
+            getString(R.string.categoria_tecnologia),
+            getString(R.string.categoria_carreira),
+            getString(R.string.categoria_cultura),
+            getString(R.string.categoria_esportes)
+        )
+        var categoriaSelecionada = categorias.first()
+
+        filtroCategoria.adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            categorias
+        )
 
         val adaptador = SimpleAdapter(
             this,
@@ -46,7 +65,7 @@ class EventosActivity : AppCompatActivity() {
                 dadosDaLista.add(
                     hashMapOf(
                         "titulo" to evento.titulo,
-                        "informacoes" to "${evento.data} às ${evento.horario} • ${evento.local}",
+                        "informacoes" to "${evento.categoria} • ${evento.data} às ${evento.horario} • ${evento.local}",
                         "descricao" to evento.descricao
                     )
                 )
@@ -62,12 +81,13 @@ class EventosActivity : AppCompatActivity() {
 
         fun filtrarEventos(texto: String) {
             val pesquisa = texto.trim()
-            val eventosFiltrados = if (pesquisa.isEmpty()) {
-                todosOsEventos
-            } else {
-                todosOsEventos.filter { evento ->
+            val eventosFiltrados = todosOsEventos.filter { evento ->
+                val correspondeAoNome = pesquisa.isEmpty() ||
                     evento.titulo.contains(pesquisa, ignoreCase = true)
-                }
+                val correspondeACategoria = categoriaSelecionada == categorias.first() ||
+                    evento.categoria.equals(categoriaSelecionada, ignoreCase = true)
+
+                correspondeAoNome && correspondeACategoria
             }
 
             mostrarEventos(eventosFiltrados)
@@ -75,6 +95,20 @@ class EventosActivity : AppCompatActivity() {
 
         campoPesquisa.addTextChangedListener { texto ->
             filtrarEventos(texto.toString())
+        }
+
+        filtroCategoria.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                categoriaSelecionada = categorias[position]
+                filtrarEventos(campoPesquisa.text.toString())
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
         }
 
         FirebaseFirestore.getInstance()
@@ -114,6 +148,7 @@ class EventosActivity : AppCompatActivity() {
             intent.putExtra("data", eventoSelecionado.data)
             intent.putExtra("horario", eventoSelecionado.horario)
             intent.putExtra("local", eventoSelecionado.local)
+            intent.putExtra("categoria", eventoSelecionado.categoria)
             intent.putExtra("limiteVagas", eventoSelecionado.limiteVagas)
             intent.putExtra("inscritos", eventoSelecionado.inscritos)
 

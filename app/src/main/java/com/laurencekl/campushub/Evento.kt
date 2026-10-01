@@ -7,6 +7,7 @@ data class Evento(
     val data: String = "",
     val horario: String = "",
     val local: String = "",
+    val categoria: String = "Tecnologia",
     val limiteVagas: Long = 30,
     val inscritos: Long = 0
 ) {

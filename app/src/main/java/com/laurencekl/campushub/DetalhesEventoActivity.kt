@@ -27,12 +27,15 @@ class DetalhesEventoActivity : AppCompatActivity() {
         val data = intent.getStringExtra("data").orEmpty()
         val horario = intent.getStringExtra("horario").orEmpty()
         val local = intent.getStringExtra("local").orEmpty()
+        val categoria = intent.getStringExtra("categoria")
+            ?: getString(R.string.categoria_tecnologia)
         var limiteVagas = intent.getLongExtra("limiteVagas", 30)
         var quantidadeInscritos = intent.getLongExtra("inscritos", 0)
         val botaoInscrever = findViewById<Button>(R.id.botaoInscrever)
         val textoVagas = findViewById<TextView>(R.id.textoVagasDetalhes)
 
         findViewById<TextView>(R.id.textoTituloDetalhes).text = titulo
+        findViewById<TextView>(R.id.textoCategoriaDetalhes).text = categoria
         findViewById<TextView>(R.id.textoDataDetalhes).text = data
         findViewById<TextView>(R.id.textoHorarioDetalhes).text = horario
         findViewById<TextView>(R.id.textoLocalDetalhes).text = local
@@ -190,6 +193,7 @@ class DetalhesEventoActivity : AppCompatActivity() {
                         "data" to data,
                         "horario" to horario,
                         "local" to local,
+                        "categoria" to categoria,
                         "limiteVagas" to limiteAtual,
                         "inscritos" to novaQuantidade,
                         "inscritoEm" to FieldValue.serverTimestamp()

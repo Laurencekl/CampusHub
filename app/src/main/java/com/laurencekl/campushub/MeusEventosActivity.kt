@@ -47,6 +47,7 @@ class MeusEventosActivity : AppCompatActivity() {
             intent.putExtra("data", eventoSelecionado.data)
             intent.putExtra("horario", eventoSelecionado.horario)
             intent.putExtra("local", eventoSelecionado.local)
+            intent.putExtra("categoria", eventoSelecionado.categoria)
             intent.putExtra("limiteVagas", eventoSelecionado.limiteVagas)
             intent.putExtra("inscritos", eventoSelecionado.inscritos)
 
@@ -95,7 +96,7 @@ class MeusEventosActivity : AppCompatActivity() {
                     dadosDaLista.add(
                         hashMapOf(
                             "titulo" to evento.titulo,
-                            "informacoes" to "${evento.data} às ${evento.horario} • ${evento.local}",
+                            "informacoes" to "${evento.categoria} • ${evento.data} às ${evento.horario} • ${evento.local}",
                             "descricao" to evento.descricao
                         )
                     )
