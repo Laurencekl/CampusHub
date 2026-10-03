@@ -1,5 +1,9 @@
 package com.laurencekl.campushub
 
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
 data class Evento(
     val id: String = "",
     val titulo: String = "",
@@ -27,5 +31,16 @@ data class Evento(
         val ano = partes[2].toIntOrNull() ?: return Int.MAX_VALUE
 
         return ano * 10000 + mes * 100 + dia
+    }
+
+    fun estaEncerrado(): Boolean {
+        val formato = SimpleDateFormat(
+            "dd/MM/yyyy HH:mm",
+            Locale.forLanguageTag("pt-BR")
+        )
+        formato.isLenient = false
+
+        val inicioDoEvento = formato.parse("$data $horario") ?: return false
+        return inicioDoEvento.before(Date())
     }
 }

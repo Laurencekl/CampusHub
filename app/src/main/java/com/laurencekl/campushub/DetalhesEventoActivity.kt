@@ -3,7 +3,9 @@ package com.laurencekl.campushub
 import android.content.Intent
 import android.os.Bundle
 import android.provider.CalendarContract
+import android.view.View
 import android.widget.Button
+import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -34,6 +36,10 @@ class DetalhesEventoActivity : AppCompatActivity() {
         val botaoInscrever = findViewById<Button>(R.id.botaoInscrever)
         val botaoFavoritar = findViewById<Button>(R.id.botaoFavoritar)
         val textoVagas = findViewById<TextView>(R.id.textoVagasDetalhes)
+        val textoMedia = findViewById<TextView>(R.id.textoMediaAvaliacoes)
+        val textoStatusAvaliacao = findViewById<TextView>(R.id.textoStatusAvaliacao)
+        val barraAvaliacao = findViewById<RatingBar>(R.id.barraAvaliacao)
+        val botaoAvaliar = findViewById<Button>(R.id.botaoAvaliarEvento)
 
         findViewById<TextView>(R.id.textoTituloDetalhes).text = titulo
         findViewById<TextView>(R.id.textoCategoriaDetalhes).text = categoria
@@ -46,6 +52,8 @@ class DetalhesEventoActivity : AppCompatActivity() {
         val bancoDados = FirebaseFirestore.getInstance()
         var inscrito = false
         var favorito = false
+        var possuiAvaliacao = false
+        val eventoEncerrado = Evento(data = data, horario = horario).estaEncerrado()
 
         val referenciaInscricao = if (usuario != null && eventoId.isNotEmpty()) {
             bancoDados
@@ -73,6 +81,93 @@ class DetalhesEventoActivity : AppCompatActivity() {
             null
         }
 
+        val referenciaAvaliacoes = referenciaEvento?.collection("avaliacoes")
+        val referenciaAvaliacaoUsuario = if (usuario != null) {
+            referenciaAvaliacoes?.document(usuario.uid)
+        } else {
+            null
+        }
+
+        fun carregarMediaAvaliacoes() {
+            if (referenciaAvaliacoes == null) {
+                textoMedia.text = getString(R.string.sem_avaliacoes)
+                return
+            }
+
+            referenciaAvaliacoes.get()
+                .addOnSuccessListener { documentos ->
+                    val notas = documentos.mapNotNull { it.getLong("nota") }
+
+                    textoMedia.text = if (notas.isEmpty()) {
+                        getString(R.string.sem_avaliacoes)
+                    } else {
+                        val media = notas.average()
+                        val mediaFormatada = String.format(
+                            Locale.forLanguageTag("pt-BR"),
+                            "%.1f",
+                            media
+                        )
+                        getString(
+                            R.string.media_avaliacoes,
+                            mediaFormatada,
+                            notas.size
+                        )
+                    }
+                }
+                .addOnFailureListener {
+                    textoMedia.text = getString(R.string.erro_carregar_avaliacoes)
+                }
+        }
+
+        fun configurarAvaliacaoDoUsuario() {
+            barraAvaliacao.visibility = View.GONE
+            botaoAvaliar.visibility = View.GONE
+
+            when {
+                !eventoEncerrado -> {
+                    textoStatusAvaliacao.text =
+                        getString(R.string.avaliacao_evento_futuro)
+                }
+                !inscrito -> {
+                    textoStatusAvaliacao.text =
+                        getString(R.string.avaliacao_apenas_inscritos)
+                }
+                referenciaAvaliacaoUsuario == null -> {
+                    textoStatusAvaliacao.text =
+                        getString(R.string.usuario_nao_autenticado)
+                }
+                else -> {
+                    textoStatusAvaliacao.text = getString(R.string.carregando_avaliacao)
+                    barraAvaliacao.visibility = View.VISIBLE
+                    botaoAvaliar.visibility = View.VISIBLE
+                    botaoAvaliar.isEnabled = false
+
+                    referenciaAvaliacaoUsuario.get()
+                        .addOnSuccessListener { documento ->
+                            possuiAvaliacao = documento.exists()
+                            val nota = documento.getLong("nota") ?: 0
+                            barraAvaliacao.rating = nota.toFloat()
+                            botaoAvaliar.text = if (possuiAvaliacao) {
+                                getString(R.string.atualizar_avaliacao)
+                            } else {
+                                getString(R.string.avaliar_evento)
+                            }
+                            textoStatusAvaliacao.text = if (possuiAvaliacao) {
+                                getString(R.string.sua_avaliacao, nota)
+                            } else {
+                                getString(R.string.escolha_nota)
+                            }
+                            botaoAvaliar.isEnabled = true
+                        }
+                        .addOnFailureListener {
+                            textoStatusAvaliacao.text =
+                                getString(R.string.erro_carregar_avaliacao)
+                            botaoAvaliar.isEnabled = true
+                        }
+                }
+            }
+        }
+
         fun atualizarVagas() {
             val vagasDisponiveis = (limiteVagas - quantidadeInscritos).coerceAtLeast(0)
 
@@ -91,6 +186,10 @@ class DetalhesEventoActivity : AppCompatActivity() {
                     botaoInscrever.text = getString(R.string.cancelar_inscricao)
                     botaoInscrever.isEnabled = true
                 }
+                eventoEncerrado -> {
+                    botaoInscrever.text = getString(R.string.evento_encerrado)
+                    botaoInscrever.isEnabled = false
+                }
                 eventoLotado -> {
                     botaoInscrever.text = getString(R.string.evento_lotado)
                     botaoInscrever.isEnabled = false
@@ -104,6 +203,7 @@ class DetalhesEventoActivity : AppCompatActivity() {
 
         atualizarVagas()
         atualizarBotao()
+        carregarMediaAvaliacoes()
 
         if (referenciaFavorito != null) {
             botaoFavoritar.isEnabled = false
@@ -131,10 +231,14 @@ class DetalhesEventoActivity : AppCompatActivity() {
                 .addOnSuccessListener { documento ->
                     inscrito = documento.exists()
                     atualizarBotao()
+                    configurarAvaliacaoDoUsuario()
                 }
                 .addOnFailureListener {
                     atualizarBotao()
+                    configurarAvaliacaoDoUsuario()
                 }
+        } else {
+            configurarAvaliacaoDoUsuario()
         }
 
         referenciaEvento?.get()
@@ -183,6 +287,7 @@ class DetalhesEventoActivity : AppCompatActivity() {
                                 quantidadeInscritos = it
                                 atualizarVagas()
                                 atualizarBotao()
+                                configurarAvaliacaoDoUsuario()
                                 Toast.makeText(
                                     this,
                                     getString(R.string.inscricao_cancelada),
@@ -240,6 +345,7 @@ class DetalhesEventoActivity : AppCompatActivity() {
                         quantidadeInscritos = resultado.second
                         atualizarVagas()
                         atualizarBotao()
+                        configurarAvaliacaoDoUsuario()
                         Toast.makeText(
                             this,
                             getString(R.string.inscricao_realizada),
@@ -265,6 +371,62 @@ class DetalhesEventoActivity : AppCompatActivity() {
                         ).show()
                     }
             }
+        }
+
+        botaoAvaliar.setOnClickListener {
+            val nota = barraAvaliacao.rating.toInt()
+
+            if (nota !in 1..5) {
+                Toast.makeText(
+                    this,
+                    getString(R.string.selecione_nota),
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            if (
+                usuario == null ||
+                referenciaAvaliacaoUsuario == null ||
+                !inscrito ||
+                !eventoEncerrado
+            ) {
+                Toast.makeText(
+                    this,
+                    getString(R.string.avaliacao_nao_permitida),
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            botaoAvaliar.isEnabled = false
+            val dadosAvaliacao = hashMapOf<String, Any>(
+                "usuarioId" to usuario.uid,
+                "nota" to nota,
+                "atualizadoEm" to FieldValue.serverTimestamp()
+            )
+
+            referenciaAvaliacaoUsuario.set(dadosAvaliacao)
+                .addOnSuccessListener {
+                    possuiAvaliacao = true
+                    botaoAvaliar.text = getString(R.string.atualizar_avaliacao)
+                    botaoAvaliar.isEnabled = true
+                    textoStatusAvaliacao.text = getString(R.string.sua_avaliacao, nota)
+                    Toast.makeText(
+                        this,
+                        getString(R.string.avaliacao_salva),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    carregarMediaAvaliacoes()
+                }
+                .addOnFailureListener {
+                    botaoAvaliar.isEnabled = true
+                    Toast.makeText(
+                        this,
+                        getString(R.string.erro_salvar_avaliacao),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
         }
 
         botaoFavoritar.setOnClickListener {
