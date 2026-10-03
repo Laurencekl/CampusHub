@@ -16,6 +16,22 @@ service cloud.firestore {
         );
     }
 
+    match /eventos/{eventoId}/comentarios/{comentarioId} {
+      allow read: if request.auth != null;
+
+      allow create: if request.auth != null
+        && request.resource.data.autorId == request.auth.uid;
+
+      allow update: if request.auth != null
+        && resource.data.autorId == request.auth.uid
+        && request.resource.data.autorId == resource.data.autorId
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['texto', 'editadoEm']);
+
+      allow delete: if request.auth != null
+        && resource.data.autorId == request.auth.uid;
+    }
+
     match /usuarios/{userId}/inscricoes/{eventoId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }

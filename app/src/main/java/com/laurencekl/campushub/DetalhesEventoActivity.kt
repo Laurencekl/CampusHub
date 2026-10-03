@@ -334,6 +334,13 @@ class DetalhesEventoActivity : AppCompatActivity() {
             }
         }
 
+        findViewById<Button>(R.id.botaoComentarios).setOnClickListener {
+            val intentComentarios = Intent(this, ComentariosActivity::class.java)
+            intentComentarios.putExtra("eventoId", eventoId)
+            intentComentarios.putExtra("tituloEvento", titulo)
+            startActivity(intentComentarios)
+        }
+
         findViewById<Button>(R.id.botaoCompartilharEvento).setOnClickListener {
             val mensagem = getString(
                 R.string.mensagem_compartilhar_evento,
