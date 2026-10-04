@@ -25,6 +25,7 @@ class EventosActivity : AppCompatActivity() {
         val textoStatus = findViewById<TextView>(R.id.textoStatusEventos)
         val campoPesquisa = findViewById<EditText>(R.id.campoPesquisaEventos)
         val filtroCategoria = findViewById<Spinner>(R.id.filtroCategoria)
+        val filtroSituacao = findViewById<Spinner>(R.id.filtroSituacao)
         val dadosDaLista = mutableListOf<HashMap<String, String>>()
         val todosOsEventos = mutableListOf<Evento>()
         val eventosDaLista = mutableListOf<Evento>()
@@ -35,12 +36,24 @@ class EventosActivity : AppCompatActivity() {
             getString(R.string.categoria_cultura),
             getString(R.string.categoria_esportes)
         )
+        val situacoes = listOf(
+            getString(R.string.todos_eventos),
+            getString(R.string.eventos_proximos),
+            getString(R.string.eventos_encerrados)
+        )
         var categoriaSelecionada = categorias.first()
+        var situacaoSelecionada = situacoes.first()
 
         filtroCategoria.adapter = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_dropdown_item,
             categorias
+        )
+
+        filtroSituacao.adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            situacoes
         )
 
         val adaptador = SimpleAdapter(
@@ -86,8 +99,13 @@ class EventosActivity : AppCompatActivity() {
                     evento.titulo.contains(pesquisa, ignoreCase = true)
                 val correspondeACategoria = categoriaSelecionada == categorias.first() ||
                     evento.categoria.equals(categoriaSelecionada, ignoreCase = true)
+                val correspondeASituacao = when (situacaoSelecionada) {
+                    situacoes[1] -> !evento.estaEncerrado()
+                    situacoes[2] -> evento.estaEncerrado()
+                    else -> true
+                }
 
-                correspondeAoNome && correspondeACategoria
+                correspondeAoNome && correspondeACategoria && correspondeASituacao
             }
 
             mostrarEventos(eventosFiltrados)
@@ -105,6 +123,20 @@ class EventosActivity : AppCompatActivity() {
                 id: Long
             ) {
                 categoriaSelecionada = categorias[position]
+                filtrarEventos(campoPesquisa.text.toString())
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+        }
+
+        filtroSituacao.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                situacaoSelecionada = situacoes[position]
                 filtrarEventos(campoPesquisa.text.toString())
             }
 

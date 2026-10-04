@@ -56,6 +56,10 @@
     <string name="categoria_carreira">Carreira</string>
     <string name="categoria_cultura">Cultura</string>
     <string name="categoria_esportes">Esportes</string>
+    <string name="filtrar_situacao">Filtrar por situação</string>
+    <string name="todos_eventos">Todos os eventos</string>
+    <string name="eventos_proximos">Próximos</string>
+    <string name="eventos_encerrados">Encerrados</string>
     <string name="carregando_eventos">Carregando eventos...</string>
     <string name="nenhum_evento">Nenhum evento disponível.</string>
     <string name="nenhum_resultado">Nenhum evento encontrado.</string>
