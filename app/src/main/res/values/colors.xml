@@ -8,4 +8,6 @@
     <color name="texto_principal">#172033</color>
     <color name="texto_secundario">#5D687A</color>
     <color name="branco">#FFFFFF</color>
+    <color name="fundo_status_encerrado">#E7EAF0</color>
+    <color name="texto_status_encerrado">#596273</color>
 </resources>

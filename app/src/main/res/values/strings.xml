@@ -118,6 +118,7 @@
     <string name="avaliacao_salva">Avaliação salva com sucesso!</string>
     <string name="erro_salvar_avaliacao">Não foi possível salvar a avaliação.</string>
     <string name="evento_encerrado">Evento encerrado</string>
+    <string name="evento_proximo">Próximo</string>
     <string name="meus_eventos_titulo">Meus eventos</string>
     <string name="meus_eventos_subtitulo">Acompanhe os eventos em que você está inscrito.</string>
     <string name="nenhuma_inscricao">Você ainda não está inscrito em nenhum evento.</string>

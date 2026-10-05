@@ -12,6 +12,7 @@ import android.widget.SimpleAdapter
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -60,13 +61,44 @@ class EventosActivity : AppCompatActivity() {
             this,
             dadosDaLista,
             R.layout.item_evento,
-            arrayOf("titulo", "informacoes", "descricao"),
+            arrayOf("titulo", "situacao", "informacoes", "descricao"),
             intArrayOf(
                 R.id.textoTituloEvento,
+                R.id.textoSituacaoEvento,
                 R.id.textoInformacoesEvento,
                 R.id.textoDescricaoEvento
             )
         )
+
+        adaptador.viewBinder = SimpleAdapter.ViewBinder { view, valor, _ ->
+            if (view.id == R.id.textoSituacaoEvento) {
+                val textoSituacao = valor.toString()
+                val texto = view as TextView
+                val eventoEncerrado = textoSituacao == getString(R.string.evento_encerrado)
+
+                texto.text = textoSituacao
+                texto.setBackgroundResource(
+                    if (eventoEncerrado) {
+                        R.drawable.fundo_status_encerrado
+                    } else {
+                        R.drawable.fundo_status_proximo
+                    }
+                )
+                texto.setTextColor(
+                    ContextCompat.getColor(
+                        this,
+                        if (eventoEncerrado) {
+                            R.color.texto_status_encerrado
+                        } else {
+                            R.color.azul_escuro
+                        }
+                    )
+                )
+                true
+            } else {
+                false
+            }
+        }
         listaEventos.adapter = adaptador
 
         fun mostrarEventos(eventos: List<Evento>) {
@@ -78,6 +110,11 @@ class EventosActivity : AppCompatActivity() {
                 dadosDaLista.add(
                     hashMapOf(
                         "titulo" to evento.titulo,
+                        "situacao" to if (evento.estaEncerrado()) {
+                            getString(R.string.evento_encerrado)
+                        } else {
+                            getString(R.string.evento_proximo)
+                        },
                         "informacoes" to "${evento.categoria} • ${evento.data} às ${evento.horario} • ${evento.local}",
                         "descricao" to evento.descricao
                     )
@@ -150,7 +187,8 @@ class EventosActivity : AppCompatActivity() {
                 val eventos = documentos.map { documento ->
                     documento.toObject(Evento::class.java).copy(id = documento.id)
                 }.sortedWith(
-                    compareBy<Evento> { it.dataParaOrdenacao() }
+                    compareBy<Evento> { it.estaEncerrado() }
+                        .thenBy { it.dataParaOrdenacao() }
                         .thenBy { it.horario }
                 )
 
