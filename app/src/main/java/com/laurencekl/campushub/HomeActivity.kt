@@ -7,8 +7,12 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class HomeActivity : AppCompatActivity() {
+
+    private lateinit var textoQuantidadeInscricoes: TextView
+    private lateinit var textoQuantidadeFavoritos: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,6 +20,8 @@ class HomeActivity : AppCompatActivity() {
 
         val textoBoasVindas = findViewById<TextView>(R.id.textoBoasVindas)
         val textoEmail = findViewById<TextView>(R.id.textoEmailUsuario)
+        textoQuantidadeInscricoes = findViewById(R.id.textoQuantidadeInscricoes)
+        textoQuantidadeFavoritos = findViewById(R.id.textoQuantidadeFavoritos)
         val botaoEventos = findViewById<Button>(R.id.botaoEventos)
         val botaoMeusEventos = findViewById<Button>(R.id.botaoMeusEventos)
         val botaoMeusFavoritos = findViewById<Button>(R.id.botaoMeusFavoritos)
@@ -64,5 +70,40 @@ class HomeActivity : AppCompatActivity() {
                 .setNegativeButton(R.string.cancelar, null)
                 .show()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        carregarResumo()
+    }
+
+    private fun carregarResumo() {
+        val usuario = FirebaseAuth.getInstance().currentUser ?: return
+        val banco = FirebaseFirestore.getInstance()
+
+        textoQuantidadeInscricoes.text = getString(R.string.carregando_quantidade)
+        textoQuantidadeFavoritos.text = getString(R.string.carregando_quantidade)
+
+        banco.collection("usuarios")
+            .document(usuario.uid)
+            .collection("inscricoes")
+            .get()
+            .addOnSuccessListener { documentos ->
+                textoQuantidadeInscricoes.text = documentos.size().toString()
+            }
+            .addOnFailureListener {
+                textoQuantidadeInscricoes.text = getString(R.string.quantidade_indisponivel)
+            }
+
+        banco.collection("usuarios")
+            .document(usuario.uid)
+            .collection("favoritos")
+            .get()
+            .addOnSuccessListener { documentos ->
+                textoQuantidadeFavoritos.text = documentos.size().toString()
+            }
+            .addOnFailureListener {
+                textoQuantidadeFavoritos.text = getString(R.string.quantidade_indisponivel)
+            }
     }
 }

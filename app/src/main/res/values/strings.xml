@@ -22,6 +22,11 @@
     <string name="inicio_titulo">Olá, %1$s!</string>
     <string name="inicio_subtitulo">Bem-vindo ao CampusHub</string>
     <string name="inicio_mensagem">Aqui você encontrará os próximos eventos da universidade.</string>
+    <string name="resumo_titulo">Seu resumo</string>
+    <string name="resumo_inscricoes">Inscrições</string>
+    <string name="resumo_favoritos">Favoritos</string>
+    <string name="carregando_quantidade">...</string>
+    <string name="quantidade_indisponivel">-</string>
     <string name="usuario">Aluno</string>
     <string name="sair">Sair</string>
     <string name="confirmar_saida_titulo">Sair da conta?</string>
