@@ -2,6 +2,7 @@ package com.laurencekl.campushub
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -13,6 +14,7 @@ class HomeActivity : AppCompatActivity() {
 
     private lateinit var textoQuantidadeInscricoes: TextView
     private lateinit var textoQuantidadeFavoritos: TextView
+    private lateinit var botaoAdministracao: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +28,7 @@ class HomeActivity : AppCompatActivity() {
         val botaoMeusEventos = findViewById<Button>(R.id.botaoMeusEventos)
         val botaoMeusFavoritos = findViewById<Button>(R.id.botaoMeusFavoritos)
         val botaoPerfil = findViewById<Button>(R.id.botaoPerfil)
+        botaoAdministracao = findViewById(R.id.botaoAdministracao)
         val botaoSair = findViewById<Button>(R.id.botaoSair)
 
         val autenticacao = FirebaseAuth.getInstance()
@@ -55,6 +58,11 @@ class HomeActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        botaoAdministracao.setOnClickListener {
+            val intent = Intent(this, AdministracaoActivity::class.java)
+            startActivity(intent)
+        }
+
         botaoSair.setOnClickListener {
             AlertDialog.Builder(this)
                 .setTitle(R.string.confirmar_saida_titulo)
@@ -75,6 +83,7 @@ class HomeActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         carregarResumo()
+        verificarAcessoAdministrativo()
     }
 
     private fun carregarResumo() {
@@ -104,6 +113,30 @@ class HomeActivity : AppCompatActivity() {
             }
             .addOnFailureListener {
                 textoQuantidadeFavoritos.text = getString(R.string.quantidade_indisponivel)
+            }
+    }
+
+    private fun verificarAcessoAdministrativo() {
+        val usuario = FirebaseAuth.getInstance().currentUser
+
+        if (usuario == null) {
+            botaoAdministracao.visibility = View.GONE
+            return
+        }
+
+        FirebaseFirestore.getInstance()
+            .collection("administradores")
+            .document(usuario.uid)
+            .get()
+            .addOnSuccessListener { documento ->
+                botaoAdministracao.visibility = if (documento.exists()) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
+            }
+            .addOnFailureListener {
+                botaoAdministracao.visibility = View.GONE
             }
     }
 }
