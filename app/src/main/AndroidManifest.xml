@@ -9,6 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CampusHub">
 
+        <activity android:name=".AdministracaoActivity" />
         <activity android:name=".ComentariosActivity" />
         <activity android:name=".MeusFavoritosActivity" />
         <activity android:name=".MeusEventosActivity" />
