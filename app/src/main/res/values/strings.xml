@@ -71,9 +71,8 @@
     <string name="filtrar_categoria">Filtrar por categoria</string>
     <string name="todas_categorias">Todas as categorias</string>
     <string name="categoria_tecnologia">Tecnologia</string>
-    <string name="categoria_carreira">Carreira</string>
     <string name="categoria_cultura">Cultura</string>
-    <string name="categoria_esportes">Esportes</string>
+    <string name="categoria_musica">Música</string>
     <string name="filtrar_situacao">Filtrar por situação</string>
     <string name="todos_eventos">Todos os eventos</string>
     <string name="eventos_proximos">Próximos</string>

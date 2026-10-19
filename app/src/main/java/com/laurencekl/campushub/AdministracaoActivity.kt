@@ -43,9 +43,8 @@ class AdministracaoActivity : AppCompatActivity() {
 
         val categorias = listOf(
             getString(R.string.categoria_tecnologia),
-            getString(R.string.categoria_carreira),
             getString(R.string.categoria_cultura),
-            getString(R.string.categoria_esportes)
+            getString(R.string.categoria_musica)
         )
         campoCategoria.adapter = ArrayAdapter(
             this,

@@ -33,9 +33,8 @@ class EventosActivity : AppCompatActivity() {
         val categorias = listOf(
             getString(R.string.todas_categorias),
             getString(R.string.categoria_tecnologia),
-            getString(R.string.categoria_carreira),
             getString(R.string.categoria_cultura),
-            getString(R.string.categoria_esportes)
+            getString(R.string.categoria_musica)
         )
         val situacoes = listOf(
             getString(R.string.todos_eventos),
