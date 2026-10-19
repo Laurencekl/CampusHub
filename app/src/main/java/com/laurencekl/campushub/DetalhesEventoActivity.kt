@@ -36,6 +36,7 @@ class DetalhesEventoActivity : AppCompatActivity() {
         val botaoInscrever = findViewById<Button>(R.id.botaoInscrever)
         val botaoFavoritar = findViewById<Button>(R.id.botaoFavoritar)
         val textoVagas = findViewById<TextView>(R.id.textoVagasDetalhes)
+        val textoEndereco = findViewById<TextView>(R.id.textoEnderecoDetalhes)
         val textoMedia = findViewById<TextView>(R.id.textoMediaAvaliacoes)
         val textoStatusAvaliacao = findViewById<TextView>(R.id.textoStatusAvaliacao)
         val barraAvaliacao = findViewById<RatingBar>(R.id.barraAvaliacao)
@@ -69,6 +70,9 @@ class DetalhesEventoActivity : AppCompatActivity() {
             bancoDados.collection("eventos").document(eventoId)
         } else {
             null
+        }
+        if (referenciaEvento == null) {
+            textoEndereco.setText(R.string.endereco_nao_informado)
         }
 
         val referenciaFavorito = if (usuario != null && eventoId.isNotEmpty()) {
@@ -243,10 +247,16 @@ class DetalhesEventoActivity : AppCompatActivity() {
 
         referenciaEvento?.get()
             ?.addOnSuccessListener { documento ->
+                textoEndereco.text = documento.getString("endereco")
+                    ?.takeIf { it.isNotBlank() }
+                    ?: getString(R.string.endereco_nao_informado)
                 limiteVagas = documento.getLong("limiteVagas") ?: 30
                 quantidadeInscritos = documento.getLong("inscritos") ?: 0
                 atualizarVagas()
                 atualizarBotao()
+            }
+            ?.addOnFailureListener {
+                textoEndereco.setText(R.string.erro_carregar_endereco)
             }
 
         botaoInscrever.setOnClickListener {

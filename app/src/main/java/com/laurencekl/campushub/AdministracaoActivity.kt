@@ -20,6 +20,7 @@ class AdministracaoActivity : AppCompatActivity() {
     private lateinit var campoData: EditText
     private lateinit var campoHorario: EditText
     private lateinit var campoLocal: EditText
+    private lateinit var campoEndereco: EditText
     private lateinit var campoVagas: EditText
     private lateinit var campoCategoria: Spinner
     private lateinit var botaoCadastrar: Button
@@ -34,6 +35,7 @@ class AdministracaoActivity : AppCompatActivity() {
         campoData = findViewById(R.id.campoDataEvento)
         campoHorario = findViewById(R.id.campoHorarioEvento)
         campoLocal = findViewById(R.id.campoLocalEvento)
+        campoEndereco = findViewById(R.id.campoEnderecoEvento)
         campoVagas = findViewById(R.id.campoVagasEvento)
         campoCategoria = findViewById(R.id.campoCategoriaEvento)
         botaoCadastrar = findViewById(R.id.botaoCadastrarEvento)
@@ -66,9 +68,10 @@ class AdministracaoActivity : AppCompatActivity() {
         val data = campoData.text.toString().trim()
         val horario = campoHorario.text.toString().trim()
         val local = campoLocal.text.toString().trim()
+        val endereco = campoEndereco.text.toString().trim()
         val vagas = campoVagas.text.toString().toLongOrNull()
 
-        if (!validarCampos(titulo, descricao, data, horario, local, vagas)) {
+        if (!validarCampos(titulo, descricao, data, horario, local, endereco, vagas)) {
             return
         }
 
@@ -78,6 +81,7 @@ class AdministracaoActivity : AppCompatActivity() {
             "data" to data,
             "horario" to horario,
             "local" to local,
+            "endereco" to endereco,
             "categoria" to campoCategoria.selectedItem.toString(),
             "limiteVagas" to vagas!!,
             "inscritos" to 0L
@@ -104,6 +108,7 @@ class AdministracaoActivity : AppCompatActivity() {
         data: String,
         horario: String,
         local: String,
+        endereco: String,
         vagas: Long?
     ): Boolean {
         val campos = listOf(
@@ -111,7 +116,8 @@ class AdministracaoActivity : AppCompatActivity() {
             campoDescricao to descricao,
             campoData to data,
             campoHorario to horario,
-            campoLocal to local
+            campoLocal to local,
+            campoEndereco to endereco
         )
 
         campos.forEach { (campo, valor) ->
@@ -153,6 +159,7 @@ class AdministracaoActivity : AppCompatActivity() {
         campoData.text.clear()
         campoHorario.text.clear()
         campoLocal.text.clear()
+        campoEndereco.text.clear()
         campoVagas.text.clear()
         campoCategoria.setSelection(0)
         campoTitulo.requestFocus()

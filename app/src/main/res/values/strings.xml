@@ -148,6 +148,10 @@
     <string name="data_evento">Data</string>
     <string name="horario_evento">Horário</string>
     <string name="local_evento">Local</string>
+    <string name="endereco_evento">Endereço completo</string>
+    <string name="carregando_endereco">Carregando endereço…</string>
+    <string name="endereco_nao_informado">Endereço não informado</string>
+    <string name="erro_carregar_endereco">Não foi possível carregar o endereço.</string>
     <string name="vagas_evento">Vagas</string>
     <string name="vagas_disponiveis">%1$d de %2$d vagas disponíveis</string>
     <string name="evento_lotado">Evento lotado</string>

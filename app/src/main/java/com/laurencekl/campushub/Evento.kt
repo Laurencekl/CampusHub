@@ -13,7 +13,8 @@ data class Evento(
     val local: String = "",
     val categoria: String = "Tecnologia",
     val limiteVagas: Long = 30,
-    val inscritos: Long = 0
+    val inscritos: Long = 0,
+    val endereco: String = ""
 ) {
     fun vagasDisponiveis(): Long {
         return (limiteVagas - inscritos).coerceAtLeast(0)
