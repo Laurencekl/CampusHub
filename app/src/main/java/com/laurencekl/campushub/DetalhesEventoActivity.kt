@@ -1,6 +1,8 @@
 package com.laurencekl.campushub
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.view.View
@@ -37,6 +39,11 @@ class DetalhesEventoActivity : AppCompatActivity() {
         val botaoFavoritar = findViewById<Button>(R.id.botaoFavoritar)
         val textoVagas = findViewById<TextView>(R.id.textoVagasDetalhes)
         val textoEndereco = findViewById<TextView>(R.id.textoEnderecoDetalhes)
+        val botaoVerMapa = findViewById<Button>(R.id.botaoVerMapa)
+        var enderecoEvento = ""
+        botaoVerMapa.setOnClickListener {
+            abrirMapa(enderecoEvento)
+        }
         val textoMedia = findViewById<TextView>(R.id.textoMediaAvaliacoes)
         val textoStatusAvaliacao = findViewById<TextView>(R.id.textoStatusAvaliacao)
         val barraAvaliacao = findViewById<RatingBar>(R.id.barraAvaliacao)
@@ -247,9 +254,10 @@ class DetalhesEventoActivity : AppCompatActivity() {
 
         referenciaEvento?.get()
             ?.addOnSuccessListener { documento ->
-                textoEndereco.text = documento.getString("endereco")
-                    ?.takeIf { it.isNotBlank() }
+                enderecoEvento = documento.getString("endereco").orEmpty().trim()
+                textoEndereco.text = enderecoEvento.takeIf { it.isNotBlank() }
                     ?: getString(R.string.endereco_nao_informado)
+                botaoVerMapa.isEnabled = enderecoEvento.isNotBlank()
                 limiteVagas = documento.getLong("limiteVagas") ?: 30
                 quantidadeInscritos = documento.getLong("inscritos") ?: 0
                 atualizarVagas()
@@ -578,6 +586,27 @@ class DetalhesEventoActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.botaoVoltarDetalhes).setOnClickListener {
             finish()
+        }
+    }
+
+    private fun abrirMapa(endereco: String) {
+        if (endereco.isBlank()) return
+
+        val consulta = Uri.encode(endereco)
+        val intentMapa = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=$consulta"))
+
+        try {
+            startActivity(intentMapa)
+        } catch (_: ActivityNotFoundException) {
+            val intentNavegador = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("https://www.google.com/maps/search/?api=1&query=$consulta")
+            )
+            try {
+                startActivity(intentNavegador)
+            } catch (_: ActivityNotFoundException) {
+                Toast.makeText(this, R.string.erro_abrir_mapa, Toast.LENGTH_LONG).show()
+            }
         }
     }
 }

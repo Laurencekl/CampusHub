@@ -151,6 +151,8 @@
     <string name="carregando_endereco">Carregando endereço…</string>
     <string name="endereco_nao_informado">Endereço não informado</string>
     <string name="erro_carregar_endereco">Não foi possível carregar o endereço.</string>
+    <string name="ver_no_mapa">Ver no mapa</string>
+    <string name="erro_abrir_mapa">Não foi possível abrir um aplicativo de mapas ou navegador.</string>
     <string name="vagas_evento">Vagas</string>
     <string name="vagas_disponiveis">%1$d de %2$d vagas disponíveis</string>
     <string name="evento_lotado">Evento lotado</string>
