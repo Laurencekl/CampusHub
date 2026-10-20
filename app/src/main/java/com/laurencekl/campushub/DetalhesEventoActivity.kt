@@ -26,6 +26,11 @@ class DetalhesEventoActivity : AppCompatActivity() {
         setContentView(R.layout.activity_detalhes_evento)
 
         val eventoId = intent.getStringExtra("eventoId").orEmpty()
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.containerFotosEvento, FotosEventoFragment.novaInstancia(eventoId))
+                .commit()
+        }
         val titulo = intent.getStringExtra("titulo").orEmpty()
         val descricao = intent.getStringExtra("descricao").orEmpty()
         val data = intent.getStringExtra("data").orEmpty()
