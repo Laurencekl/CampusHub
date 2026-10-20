@@ -14,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -77,6 +78,22 @@ class FotosEventoFragment : Fragment(R.layout.fragment_fotos_evento) {
         }
     }
 
+    private fun confirmarExclusao(foto: FotoEventoLocal) {
+        val usuarioId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        if (foto.autorId != usuarioId) return
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.excluir_foto_titulo)
+            .setMessage(R.string.excluir_foto_mensagem)
+            .setPositiveButton(R.string.sim_excluir) { _, _ ->
+                executar(R.string.excluindo_foto, R.string.erro_excluir_foto, R.string.foto_excluida) {
+                    check(FirebaseAuth.getInstance().currentUser?.uid == usuarioId)
+                    armazenamento.excluir(foto.id, usuarioId)
+                }
+            }
+            .setNegativeButton(R.string.cancelar, null)
+            .show()
+    }
+
     private fun executar(estado: Int, erro: Int, sucesso: Int? = null, acao: () -> Unit) {
         val tela = view ?: return
         val botao = tela.findViewById<Button>(R.id.botaoCompartilharFoto)
@@ -126,7 +143,12 @@ class FotosEventoFragment : Fragment(R.layout.fragment_fotos_evento) {
             holder.itemView.findViewById<TextView>(R.id.textoDataFoto).text =
                 SimpleDateFormat("dd/MM/yyyy 'às' HH:mm", Locale.forLanguageTag("pt-BR"))
                     .format(Date(foto.criadoEm))
-            holder.itemView.findViewById<Button>(R.id.botaoExcluirFoto).visibility = View.GONE
+            holder.itemView.findViewById<Button>(R.id.botaoExcluirFoto).apply {
+                visibility = if (foto.autorId == FirebaseAuth.getInstance().currentUser?.uid) {
+                    View.VISIBLE
+                } else View.GONE
+                setOnClickListener { confirmarExclusao(foto) }
+            }
             executor.execute {
                 val bitmap = runCatching { armazenamento.carregarMiniatura(foto.id) }.getOrNull()
                 principal.post {
