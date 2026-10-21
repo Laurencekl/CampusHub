@@ -9,6 +9,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CampusHub">
 
+        <provider
+            android:name=".FotosCameraProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/caminhos_fotos_camera" />
+        </provider>
+
         <activity android:name=".AdministracaoActivity" />
         <activity android:name=".ComentariosActivity" />
         <activity android:name=".MeusFavoritosActivity" />
