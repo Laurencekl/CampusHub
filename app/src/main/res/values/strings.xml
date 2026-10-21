@@ -155,7 +155,9 @@
     <string name="erro_abrir_mapa">Não foi possível abrir um aplicativo de mapas ou navegador.</string>
     <string name="fotos_participantes">Fotos dos participantes</string>
     <string name="fotos_participantes_descricao">Compartilhe um momento deste evento. As fotos ficam disponíveis somente neste celular.</string>
-    <string name="compartilhar_foto">Compartilhar foto</string>
+    <string name="tirar_foto">Tirar foto</string>
+    <string name="escolher_foto_galeria">Escolher da galeria</string>
+    <string name="erro_abrir_camera">Não foi possível abrir a câmera. Tente novamente.</string>
     <string name="nenhuma_foto_evento">Ainda não há fotos deste evento neste celular.</string>
     <string name="carregando_fotos">Carregando fotos…</string>
     <string name="salvando_foto">Salvando foto…</string>
@@ -170,7 +172,7 @@
     <string name="foto_participante_descricao">Foto compartilhada por %1$s</string>
     <string name="excluir_foto">Excluir minha foto</string>
     <string name="excluir_foto_titulo">Excluir sua foto?</string>
-    <string name="excluir_foto_mensagem">A publicação será removida deste celular. A imagem original da galeria será mantida.</string>
+    <string name="excluir_foto_mensagem">A publicação será removida deste celular.</string>
     <string name="vagas_evento">Vagas</string>
     <string name="vagas_disponiveis">%1$d de %2$d vagas disponíveis</string>
     <string name="evento_lotado">Evento lotado</string>

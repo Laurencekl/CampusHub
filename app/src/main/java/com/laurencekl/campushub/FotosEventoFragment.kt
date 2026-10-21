@@ -14,11 +14,15 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
+import androidx.activity.result.contract.ActivityResultContracts.TakePicture
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import java.io.File
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -29,20 +33,39 @@ class FotosEventoFragment : Fragment(R.layout.fragment_fotos_evento) {
     private val principal = Handler(Looper.getMainLooper())
     private lateinit var armazenamento: FotosEventoArmazenamento
     private var autorSelecao: String? = null
+    private var arquivoCamera: File? = null
     private val eventoId get() = requireArguments().getString("eventoId").orEmpty()
     private val seletor = registerForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) publicar(uri)
+    }
+    private val camera = registerForActivityResult(TakePicture()) { confirmada ->
+        val arquivo = arquivoCamera
+        arquivoCamera = null
+        when {
+            !confirmada -> arquivo?.delete()
+            arquivo == null || !arquivo.isFile || arquivo.length() == 0L -> {
+                arquivo?.delete()
+                avisar(R.string.erro_salvar_foto)
+            }
+            else -> publicar(Uri.fromFile(arquivo), arquivo)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         armazenamento = FotosEventoArmazenamento(requireContext().applicationContext)
         autorSelecao = savedInstanceState?.getString("autorSelecao")
+        savedInstanceState?.getString("arquivoCamera")
+            ?.takeIf { it == File(it).name && it.startsWith("captura_") && it.endsWith(".jpg") }
+            ?.let { arquivoCamera = File(File(requireContext().cacheDir, "fotos_camera"), it) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         view.findViewById<RecyclerView>(R.id.listaFotosEvento).layoutManager =
             LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
+        view.findViewById<Button>(R.id.botaoTirarFoto).setOnClickListener {
+            tirarFoto()
+        }
         view.findViewById<Button>(R.id.botaoCompartilharFoto).setOnClickListener {
             val usuario = FirebaseAuth.getInstance().currentUser
             if (usuario == null || eventoId.isBlank()) {
@@ -61,20 +84,63 @@ class FotosEventoFragment : Fragment(R.layout.fragment_fotos_evento) {
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString("autorSelecao", autorSelecao)
+        outState.putString("arquivoCamera", arquivoCamera?.name)
         super.onSaveInstanceState(outState)
     }
 
-    private fun publicar(uri: Uri) {
+    private fun tirarFoto() {
+        if (arquivoCamera != null) return
+        val usuario = FirebaseAuth.getInstance().currentUser
+        if (usuario == null || eventoId.isBlank()) {
+            avisar(R.string.login_para_foto)
+            return
+        }
+        autorSelecao = usuario.uid
+        try {
+            val contexto = requireContext()
+            val pasta = File(contexto.cacheDir, "fotos_camera")
+            if (!pasta.isDirectory && !pasta.mkdirs()) throw IOException("Pasta indisponível")
+            val arquivo = File.createTempFile("captura_", ".jpg", pasta)
+            arquivoCamera = arquivo
+            val uri = FileProvider.getUriForFile(
+                contexto, "${contexto.packageName}.fileprovider", arquivo
+            )
+            camera.launch(uri)
+        } catch (_: ActivityNotFoundException) {
+            falhaAoAbrirCamera()
+        } catch (_: IOException) {
+            falhaAoAbrirCamera()
+        } catch (_: SecurityException) {
+            falhaAoAbrirCamera()
+        }
+    }
+
+    private fun falhaAoAbrirCamera() {
+        arquivoCamera?.delete()
+        arquivoCamera = null
+        avisar(R.string.erro_abrir_camera)
+    }
+
+    private fun publicar(uri: Uri, arquivoTemporario: File? = null) {
+        if (view == null) {
+            arquivoTemporario?.delete()
+            return
+        }
         val usuario = FirebaseAuth.getInstance().currentUser
         if (usuario == null || usuario.uid != autorSelecao) {
+            arquivoTemporario?.delete()
             avisar(R.string.login_para_foto)
             return
         }
         val nome = usuario.displayName?.takeIf { it.isNotBlank() }
             ?: usuario.email ?: getString(R.string.usuario)
         executar(R.string.salvando_foto, R.string.erro_salvar_foto, R.string.foto_publicada) {
-            check(FirebaseAuth.getInstance().currentUser?.uid == usuario.uid)
-            armazenamento.salvar(uri, eventoId, usuario.uid, nome)
+            try {
+                check(FirebaseAuth.getInstance().currentUser?.uid == usuario.uid)
+                armazenamento.salvar(uri, eventoId, usuario.uid, nome)
+            } finally {
+                arquivoTemporario?.delete()
+            }
         }
     }
 
@@ -97,9 +163,11 @@ class FotosEventoFragment : Fragment(R.layout.fragment_fotos_evento) {
     private fun executar(estado: Int, erro: Int, sucesso: Int? = null, acao: () -> Unit) {
         val tela = view ?: return
         val botao = tela.findViewById<Button>(R.id.botaoCompartilharFoto)
+        val botaoCamera = tela.findViewById<Button>(R.id.botaoTirarFoto)
         val status = tela.findViewById<TextView>(R.id.textoStatusFotos)
         val lista = tela.findViewById<RecyclerView>(R.id.listaFotosEvento)
         botao.isEnabled = false
+        botaoCamera.isEnabled = false
         status.visibility = View.VISIBLE
         status.setText(estado)
         lista.isEnabled = false
@@ -111,6 +179,7 @@ class FotosEventoFragment : Fragment(R.layout.fragment_fotos_evento) {
             principal.post {
                 if (view !== tela) return@post
                 botao.isEnabled = true
+                botaoCamera.isEnabled = true
                 lista.isEnabled = true
                 resultado.onSuccess { fotos ->
                     status.setText(R.string.nenhuma_foto_evento)
