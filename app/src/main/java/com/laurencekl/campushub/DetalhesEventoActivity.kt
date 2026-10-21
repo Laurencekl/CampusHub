@@ -291,7 +291,13 @@ class DetalhesEventoActivity : AppCompatActivity() {
 
                         bancoDados.runTransaction { transacao ->
                             val evento = transacao.get(referenciaEvento)
+                            val inscricaoAtual = transacao.get(referenciaInscricao)
                             val inscritosAtuais = evento.getLong("inscritos") ?: 0
+
+                            if (!inscricaoAtual.exists()) {
+                                return@runTransaction inscritosAtuais
+                            }
+
                             val novaQuantidade = (inscritosAtuais - 1).coerceAtLeast(0)
 
                             if (inscritosAtuais > 0) {
@@ -333,8 +339,13 @@ class DetalhesEventoActivity : AppCompatActivity() {
 
                 bancoDados.runTransaction { transacao ->
                     val evento = transacao.get(referenciaEvento)
+                    val inscricaoAtual = transacao.get(referenciaInscricao)
                     val limiteAtual = evento.getLong("limiteVagas") ?: 30
                     val inscritosAtuais = evento.getLong("inscritos") ?: 0
+
+                    if (inscricaoAtual.exists()) {
+                        return@runTransaction Pair(limiteAtual, inscritosAtuais)
+                    }
 
                     if (inscritosAtuais >= limiteAtual) {
                         throw FirebaseFirestoreException(
