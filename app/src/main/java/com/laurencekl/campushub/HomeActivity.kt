@@ -20,8 +20,6 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
-        val textoBoasVindas = findViewById<TextView>(R.id.textoBoasVindas)
-        val textoEmail = findViewById<TextView>(R.id.textoEmailUsuario)
         textoQuantidadeInscricoes = findViewById(R.id.textoQuantidadeInscricoes)
         textoQuantidadeFavoritos = findViewById(R.id.textoQuantidadeFavoritos)
         val botaoEventos = findViewById<Button>(R.id.botaoEventos)
@@ -32,11 +30,6 @@ class HomeActivity : AppCompatActivity() {
         val botaoSair = findViewById<Button>(R.id.botaoSair)
 
         val autenticacao = FirebaseAuth.getInstance()
-        val usuario = autenticacao.currentUser
-        val nome = usuario?.displayName ?: getString(R.string.usuario)
-
-        textoBoasVindas.text = getString(R.string.inicio_titulo, nome)
-        textoEmail.text = usuario?.email.orEmpty()
 
         botaoEventos.setOnClickListener {
             val intent = Intent(this, EventosActivity::class.java)
@@ -82,8 +75,17 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        mostrarDadosDoUsuario()
         carregarResumo()
         verificarAcessoAdministrativo()
+    }
+
+    private fun mostrarDadosDoUsuario() {
+        val usuario = FirebaseAuth.getInstance().currentUser
+        val nome = usuario?.displayName ?: getString(R.string.usuario)
+
+        findViewById<TextView>(R.id.textoBoasVindas).text = getString(R.string.inicio_titulo, nome)
+        findViewById<TextView>(R.id.textoEmailUsuario).text = usuario?.email.orEmpty()
     }
 
     private fun carregarResumo() {
