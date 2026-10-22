@@ -7,7 +7,9 @@ import android.widget.ListView
 import android.widget.SimpleAdapter
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 
 class MeusEventosActivity : AppCompatActivity() {
@@ -77,14 +79,21 @@ class MeusEventosActivity : AppCompatActivity() {
         dadosDaLista.clear()
         adaptador.notifyDataSetChanged()
 
-        FirebaseFirestore.getInstance()
+        val banco = FirebaseFirestore.getInstance()
+        banco
             .collection("usuarios")
             .document(usuario.uid)
             .collection("inscricoes")
             .get()
+            .continueWithTask { consulta ->
+                val consultasEventos = consulta.result.documents.map { inscricao ->
+                    banco.collection("eventos").document(inscricao.id).get()
+                }
+                Tasks.whenAllSuccess<DocumentSnapshot>(consultasEventos)
+            }
             .addOnSuccessListener { documentos ->
-                val inscricoes = documentos.map { documento ->
-                    documento.toObject(Evento::class.java).copy(id = documento.id)
+                val inscricoes = documentos.mapNotNull { documento ->
+                    documento.toObject(Evento::class.java)?.copy(id = documento.id)
                 }.sortedWith(
                     compareBy<Evento> { it.dataParaOrdenacao() }
                         .thenBy { it.horario }
