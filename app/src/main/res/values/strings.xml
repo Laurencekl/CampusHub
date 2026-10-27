@@ -189,6 +189,16 @@
     <string name="excluir_audio_titulo">Excluir seu áudio?</string>
     <string name="excluir_audio_mensagem">O áudio será removido deste celular.</string>
     <string name="audio_excluido">Áudio excluído.</string>
+    <string name="ver_videos_evento">Vídeos do evento</string>
+    <string name="videos_evento_titulo">Vídeos do evento</string>
+    <string name="gravar_video">Gravar vídeo</string>
+    <string name="escolher_video">Galeria</string>
+    <string name="item_video">%1$s\n%2$s — toque para assistir</string>
+    <string name="nenhum_video_evento">Ainda não há vídeos neste evento.</string>
+    <string name="erro_abrir_camera_video">Não foi possível abrir a câmera.</string>
+    <string name="erro_salvar_video">Não foi possível salvar o vídeo.</string>
+    <string name="erro_reproduzir_video">Não foi possível reproduzir o vídeo.</string>
+    <string name="video_publicado">Vídeo publicado!</string>
     <string name="vagas_evento">Vagas</string>
     <string name="vagas_disponiveis">%1$d de %2$d vagas disponíveis</string>
     <string name="evento_lotado">Evento lotado</string>

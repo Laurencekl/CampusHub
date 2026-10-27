@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundo_claro"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/videos_evento_titulo"
+        android:textColor="@color/azul_principal"
+        android:textSize="27sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textoTituloEventoVideo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textColor="@color/texto_principal"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+    <VideoView
+        android:id="@+id/reprodutorVideo"
+        android:layout_width="match_parent"
+        android:layout_height="190dp"
+        android:layout_marginTop="12dp"
+        android:background="@android:color/black" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/botaoGravarVideo"
+            android:layout_width="0dp"
+            android:layout_height="54dp"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="1"
+            android:text="@string/gravar_video"
+            app:cornerRadius="12dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/botaoEscolherVideo"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="54dp"
+            android:layout_marginStart="5dp"
+            android:layout_weight="1"
+            android:text="@string/escolher_video"
+            app:cornerRadius="12dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textoSemVideos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/nenhum_video_evento"
+        android:textColor="@color/texto_secundario" />
+
+    <ListView
+        android:id="@+id/listaVideosEvento"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="6dp"
+        android:layout_weight="1"
+        android:dividerHeight="8dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/botaoVoltarVideos"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:text="@string/voltar"
+        app:cornerRadius="12dp" />
+</LinearLayout>
