@@ -12,6 +12,7 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
@@ -56,6 +57,10 @@ class AudiosEventoActivity : AppCompatActivity() {
         findViewById<ListView>(R.id.listaAudiosEvento).apply {
             adapter = adaptador
             setOnItemClickListener { _, _, position, _ -> reproduzir(audios[position]) }
+            setOnItemLongClickListener { _, _, position, _ ->
+                confirmarExclusao(audios[position])
+                true
+            }
         }
 
         findViewById<Button>(R.id.botaoGravarAudio).setOnClickListener { gravarAudio() }
@@ -100,6 +105,24 @@ class AudiosEventoActivity : AppCompatActivity() {
             liberarReprodutor()
             avisar(R.string.erro_reproduzir_audio)
         }
+    }
+
+    private fun confirmarExclusao(audio: AudioEventoLocal) {
+        if (audio.autorId != FirebaseAuth.getInstance().currentUser?.uid) {
+            avisar(R.string.apenas_autor_exclui_audio)
+            return
+        }
+        AlertDialog.Builder(this)
+            .setTitle(R.string.excluir_audio_titulo)
+            .setMessage(R.string.excluir_audio_mensagem)
+            .setPositiveButton(R.string.sim_excluir) { _, _ ->
+                liberarReprodutor()
+                armazenamento.excluir(audio)
+                carregarAudios()
+                avisar(R.string.audio_excluido)
+            }
+            .setNegativeButton(R.string.cancelar, null)
+            .show()
     }
 
     private fun liberarReprodutor() {

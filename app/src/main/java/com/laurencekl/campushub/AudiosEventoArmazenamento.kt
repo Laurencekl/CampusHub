@@ -64,5 +64,19 @@ class AudiosEventoArmazenamento(private val contexto: Context) {
 
     fun caminho(id: String): String = arquivo(id).path
 
+    fun excluir(audio: AudioEventoLocal) {
+        val chaveIds = "ids_${audio.eventoId}"
+        val ids = preferencias.getStringSet(chaveIds, emptySet()).orEmpty().toMutableSet()
+        ids.remove(audio.id)
+
+        preferencias.edit()
+            .putStringSet(chaveIds, ids)
+            .remove("${audio.id}_autorId")
+            .remove("${audio.id}_autorNome")
+            .remove("${audio.id}_criadoEm")
+            .apply()
+        arquivo(audio.id).delete()
+    }
+
     private fun arquivo(id: String) = File(pasta, "${UUID.fromString(id)}.m4a")
 }

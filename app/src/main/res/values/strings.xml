@@ -175,7 +175,7 @@
     <string name="excluir_foto_mensagem">A publicação será removida deste celular.</string>
     <string name="ver_audios_evento">Áudios do evento</string>
     <string name="audios_evento_titulo">Áudios do evento</string>
-    <string name="audios_evento_descricao">Grave um áudio curto ou toque em um item para ouvir.</string>
+    <string name="audios_evento_descricao">Toque para ouvir. Segure seu áudio para excluir.</string>
     <string name="gravar_audio">Gravar áudio</string>
     <string name="item_audio">%1$s\n%2$s — toque para reproduzir</string>
     <string name="nenhum_audio_evento">Ainda não há áudios neste evento.</string>
@@ -185,6 +185,10 @@
     <string name="erro_reproduzir_audio">Não foi possível reproduzir o áudio.</string>
     <string name="audio_publicado">Áudio publicado!</string>
     <string name="audio_reproduzindo">Reproduzindo áudio…</string>
+    <string name="apenas_autor_exclui_audio">Você só pode excluir seus próprios áudios.</string>
+    <string name="excluir_audio_titulo">Excluir seu áudio?</string>
+    <string name="excluir_audio_mensagem">O áudio será removido deste celular.</string>
+    <string name="audio_excluido">Áudio excluído.</string>
     <string name="vagas_evento">Vagas</string>
     <string name="vagas_disponiveis">%1$d de %2$d vagas disponíveis</string>
     <string name="evento_lotado">Evento lotado</string>
