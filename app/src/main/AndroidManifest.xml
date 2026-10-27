@@ -19,6 +19,7 @@
                 android:resource="@xml/caminhos_fotos_camera" />
         </provider>
 
+        <activity android:name=".VideosEventoActivity" />
         <activity android:name=".AudiosEventoActivity" />
         <activity android:name=".AdministracaoActivity" />
         <activity android:name=".ComentariosActivity" />
