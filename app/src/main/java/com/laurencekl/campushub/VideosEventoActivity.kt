@@ -14,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import android.widget.VideoView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
@@ -53,6 +54,10 @@ class VideosEventoActivity : AppCompatActivity() {
         findViewById<ListView>(R.id.listaVideosEvento).apply {
             adapter = adaptador
             setOnItemClickListener { _, _, position, _ -> reproduzir(videos[position]) }
+            setOnItemLongClickListener { _, _, position, _ ->
+                confirmarExclusao(videos[position])
+                true
+            }
         }
 
         findViewById<Button>(R.id.botaoGravarVideo).setOnClickListener { abrirCamera() }
@@ -104,6 +109,24 @@ class VideosEventoActivity : AppCompatActivity() {
             avisar(R.string.erro_reproduzir_video)
             true
         }
+    }
+
+    private fun confirmarExclusao(video: VideoEventoLocal) {
+        if (video.autorId != FirebaseAuth.getInstance().currentUser?.uid) {
+            avisar(R.string.apenas_autor_exclui_video)
+            return
+        }
+        AlertDialog.Builder(this)
+            .setTitle(R.string.excluir_video_titulo)
+            .setMessage(R.string.excluir_video_mensagem)
+            .setPositiveButton(R.string.sim_excluir) { _, _ ->
+                reprodutor.stopPlayback()
+                armazenamento.excluir(video)
+                carregarVideos()
+                avisar(R.string.video_excluido)
+            }
+            .setNegativeButton(R.string.cancelar, null)
+            .show()
     }
 
     private fun avisar(mensagem: Int) {

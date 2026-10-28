@@ -193,12 +193,16 @@
     <string name="videos_evento_titulo">Vídeos do evento</string>
     <string name="gravar_video">Gravar vídeo</string>
     <string name="escolher_video">Galeria</string>
-    <string name="item_video">%1$s\n%2$s — toque para assistir</string>
+    <string name="item_video">%1$s\n%2$s — toque para assistir; segure para excluir</string>
     <string name="nenhum_video_evento">Ainda não há vídeos neste evento.</string>
     <string name="erro_abrir_camera_video">Não foi possível abrir a câmera.</string>
     <string name="erro_salvar_video">Não foi possível salvar o vídeo.</string>
     <string name="erro_reproduzir_video">Não foi possível reproduzir o vídeo.</string>
     <string name="video_publicado">Vídeo publicado!</string>
+    <string name="apenas_autor_exclui_video">Você só pode excluir seus próprios vídeos.</string>
+    <string name="excluir_video_titulo">Excluir seu vídeo?</string>
+    <string name="excluir_video_mensagem">O vídeo será removido deste celular.</string>
+    <string name="video_excluido">Vídeo excluído.</string>
     <string name="vagas_evento">Vagas</string>
     <string name="vagas_disponiveis">%1$d de %2$d vagas disponíveis</string>
     <string name="evento_lotado">Evento lotado</string>

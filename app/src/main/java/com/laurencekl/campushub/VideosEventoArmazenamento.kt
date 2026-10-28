@@ -64,5 +64,19 @@ class VideosEventoArmazenamento(private val contexto: Context) {
 
     fun caminho(id: String): String = arquivo(id).path
 
+    fun excluir(video: VideoEventoLocal) {
+        val chaveIds = "ids_${video.eventoId}"
+        val ids = preferencias.getStringSet(chaveIds, emptySet()).orEmpty().toMutableSet()
+        ids.remove(video.id)
+
+        preferencias.edit()
+            .putStringSet(chaveIds, ids)
+            .remove("${video.id}_autorId")
+            .remove("${video.id}_autorNome")
+            .remove("${video.id}_criadoEm")
+            .apply()
+        arquivo(video.id).delete()
+    }
+
     private fun arquivo(id: String) = File(pasta, "${UUID.fromString(id)}.mp4")
 }
