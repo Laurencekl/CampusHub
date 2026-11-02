@@ -117,7 +117,7 @@ class DetalhesEventoActivity : AppCompatActivity() {
                     textoMedia.text = if (notas.isEmpty()) {
                         getString(R.string.sem_avaliacoes)
                     } else {
-                        val media = notas.average()
+                        val media = EventoRegras.calcularMedia(notas)
                         val mediaFormatada = String.format(
                             Locale.forLanguageTag("pt-BR"),
                             "%.1f",
@@ -347,7 +347,7 @@ class DetalhesEventoActivity : AppCompatActivity() {
                         return@runTransaction Pair(limiteAtual, inscritosAtuais)
                     }
 
-                    if (inscritosAtuais >= limiteAtual) {
+                    if (!EventoRegras.temVagas(inscritosAtuais, limiteAtual)) {
                         throw FirebaseFirestoreException(
                             "EVENTO_LOTADO",
                             FirebaseFirestoreException.Code.ABORTED
@@ -410,7 +410,7 @@ class DetalhesEventoActivity : AppCompatActivity() {
         botaoAvaliar.setOnClickListener {
             val nota = barraAvaliacao.rating.toInt()
 
-            if (nota !in 1..5) {
+            if (!EventoRegras.notaValida(nota)) {
                 Toast.makeText(
                     this,
                     getString(R.string.selecione_nota),
