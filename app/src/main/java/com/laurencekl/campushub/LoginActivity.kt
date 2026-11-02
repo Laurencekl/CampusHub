@@ -2,7 +2,6 @@ package com.laurencekl.campushub
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Patterns
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -60,13 +59,13 @@ class LoginActivity : AppCompatActivity() {
         val email = editEmail.text.toString().trim()
         val senha = editSenha.text.toString()
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (!UsuarioRegras.emailValido(email)) {
             editEmail.error = getString(R.string.email_invalido)
             editEmail.requestFocus()
             return
         }
 
-        if (senha.isBlank()) {
+        if (!UsuarioRegras.senhaLoginValida(senha)) {
             editSenha.error = getString(R.string.campo_obrigatorio)
             editSenha.requestFocus()
             return

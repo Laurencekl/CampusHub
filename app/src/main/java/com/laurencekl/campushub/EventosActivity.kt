@@ -129,20 +129,20 @@ class EventosActivity : AppCompatActivity() {
         }
 
         fun filtrarEventos(texto: String) {
-            val pesquisa = texto.trim()
-            val eventosFiltrados = todosOsEventos.filter { evento ->
-                val correspondeAoNome = pesquisa.isEmpty() ||
-                    evento.titulo.contains(pesquisa, ignoreCase = true)
-                val correspondeACategoria = categoriaSelecionada == categorias.first() ||
-                    evento.categoria.equals(categoriaSelecionada, ignoreCase = true)
-                val correspondeASituacao = when (situacaoSelecionada) {
-                    situacoes[1] -> !evento.estaEncerrado()
-                    situacoes[2] -> evento.estaEncerrado()
-                    else -> true
-                }
-
-                correspondeAoNome && correspondeACategoria && correspondeASituacao
+            val categoria = categoriaSelecionada.takeUnless {
+                it == categorias.first()
             }
+            val encerrado = when (situacaoSelecionada) {
+                situacoes[1] -> false
+                situacoes[2] -> true
+                else -> null
+            }
+            val eventosFiltrados = EventoRegras.filtrar(
+                todosOsEventos,
+                texto,
+                categoria,
+                encerrado
+            )
 
             mostrarEventos(eventosFiltrados)
         }

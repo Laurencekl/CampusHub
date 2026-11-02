@@ -2,7 +2,6 @@ package com.laurencekl.campushub
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Patterns
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -76,25 +75,25 @@ class CadastroActivity : AppCompatActivity() {
         senha: String,
         confirmarSenha: String
     ): Boolean {
-        if (nome.isBlank()) {
+        if (!UsuarioRegras.nomeValido(nome)) {
             editNome.error = getString(R.string.campo_obrigatorio)
             editNome.requestFocus()
             return false
         }
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (!UsuarioRegras.emailValido(email)) {
             editEmail.error = getString(R.string.email_invalido)
             editEmail.requestFocus()
             return false
         }
 
-        if (senha.length < 6) {
+        if (!UsuarioRegras.senhaCadastroValida(senha)) {
             editSenha.error = getString(R.string.senha_curta)
             editSenha.requestFocus()
             return false
         }
 
-        if (senha != confirmarSenha) {
+        if (!UsuarioRegras.senhasIguais(senha, confirmarSenha)) {
             editConfirmarSenha.error = getString(R.string.senhas_diferentes)
             editConfirmarSenha.requestFocus()
             return false

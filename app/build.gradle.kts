@@ -1,6 +1,11 @@
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
+    id("jacoco")
+}
+
+jacoco {
+    toolVersion = "0.8.14"
 }
 
 android {
@@ -31,4 +36,51 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
 
     testImplementation("junit:junit:4.13.2")
+}
+
+val classesDasRegras = fileTree(
+    layout.buildDirectory.dir(
+        "intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes"
+    )
+) {
+    include("com/laurencekl/campushub/Evento.class")
+    include("com/laurencekl/campushub/EventoRegras.class")
+    include("com/laurencekl/campushub/UsuarioRegras.class")
+}
+
+tasks.register<JacocoReport>("relatorioCobertura") {
+    dependsOn("testDebugUnitTest")
+
+    classDirectories.setFrom(classesDasRegras)
+    sourceDirectories.setFrom(files("src/main/java"))
+    executionData.setFrom(
+        fileTree(layout.buildDirectory) {
+            include("jacoco/testDebugUnitTest.exec")
+        }
+    )
+
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+    }
+}
+
+tasks.register<JacocoCoverageVerification>("verificarCobertura") {
+    dependsOn("testDebugUnitTest")
+
+    classDirectories.setFrom(classesDasRegras)
+    sourceDirectories.setFrom(files("src/main/java"))
+    executionData.setFrom(
+        fileTree(layout.buildDirectory) {
+            include("jacoco/testDebugUnitTest.exec")
+        }
+    )
+
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.70".toBigDecimal()
+            }
+        }
+    }
 }
