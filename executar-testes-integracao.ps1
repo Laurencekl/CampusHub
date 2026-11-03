@@ -1,3 +1,8 @@
+param(
+    [string]$ClasseTeste = "com.laurencekl.campushub.FirebaseIntegracaoTest",
+    [string]$ComandoPreparacao = ""
+)
+
 $ErrorActionPreference = "Stop"
 
 $pastaProjeto = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -34,16 +39,20 @@ if (-not $conectado) {
 & $adb reverse tcp:8080 tcp:8080
 & $adb reverse tcp:9099 tcp:9099
 
-$classeTeste = "com.laurencekl.campushub.FirebaseIntegracaoTest"
 $comandoGradle = ".\gradlew.bat connectedDebugAndroidTest " +
     "-Pandroid.testInstrumentationRunnerArguments.class=$classeTeste"
+$comandoExecucao = $comandoGradle
+
+if ($ComandoPreparacao) {
+    $comandoExecucao = "$ComandoPreparacao && $comandoGradle"
+}
 
 Push-Location $pastaProjeto
 try {
     & npx.cmd --yes firebase-tools@15.34.2 emulators:exec `
         --project "campushub-1d2a4" `
         --only "auth,firestore" `
-        $comandoGradle
+        $comandoExecucao
 
     if ($LASTEXITCODE -ne 0) {
         throw "Os testes de integracao falharam."

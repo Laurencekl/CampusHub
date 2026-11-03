@@ -9,8 +9,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreSettings
-import com.google.firebase.firestore.MemoryCacheSettings
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -32,14 +30,9 @@ class FirebaseIntegracaoTest {
         @BeforeClass
         @JvmStatic
         fun configurarEmuladores() {
+            FirebaseTesteConfig.configurar()
             autenticacao = FirebaseAuth.getInstance()
-            autenticacao.useEmulator("127.0.0.1", 9099)
-
             bancoDados = FirebaseFirestore.getInstance()
-            bancoDados.useEmulator("127.0.0.1", 8080)
-            bancoDados.firestoreSettings = FirebaseFirestoreSettings.Builder()
-                .setLocalCacheSettings(MemoryCacheSettings.newBuilder().build())
-                .build()
         }
     }
 
