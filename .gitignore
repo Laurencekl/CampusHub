@@ -11,3 +11,7 @@ gradle/gradle-daemon-jvm.properties
 **/google-services.json
 *.jks
 *.keystore
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
