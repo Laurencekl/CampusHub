@@ -1,9 +1,15 @@
 package com.laurencekl.campushub
 
+import android.app.ActivityManager
+import android.content.Intent
 import android.os.SystemClock
+import android.view.View
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.pressBack
+import androidx.test.espresso.UiController
+import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.replaceText
@@ -22,6 +28,7 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.anything
+import org.hamcrest.Matcher
 import org.junit.After
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -61,7 +68,7 @@ class CampusHubE2ETest {
         val tela = ActivityScenario.launch(LoginActivity::class.java)
 
         try {
-            garantirCampusHubEmPrimeiroPlano(tela)
+            garantirCampusHubEmPrimeiroPlano()
             onView(withId(R.id.botaoIrParaCadastro)).perform(click())
             onView(withId(R.id.editNome)).perform(replaceText("Aluno E2E"))
             onView(withId(R.id.editEmail)).perform(replaceText(email))
@@ -77,8 +84,10 @@ class CampusHubE2ETest {
                     .check(matches(withText(email)))
             }
 
-            onView(withId(R.id.botaoSair)).perform(scrollTo(), click())
-            onView(withText(R.string.sair)).inRoot(isDialog()).perform(click())
+            onView(withId(R.id.botaoSair)).perform(scrollTo(), clicarDiretamente())
+            esperarAte {
+                onView(withText(R.string.sair)).inRoot(isDialog()).perform(click())
+            }
 
             esperarAte {
                 onView(withId(R.id.editEmailLogin)).check(matches(isDisplayed()))
@@ -105,7 +114,7 @@ class CampusHubE2ETest {
         val tela = ActivityScenario.launch(LoginActivity::class.java)
 
         try {
-            garantirCampusHubEmPrimeiroPlano(tela)
+            garantirCampusHubEmPrimeiroPlano()
             onView(withId(R.id.editEmailLogin)).perform(replaceText(email))
             onView(withId(R.id.editSenhaLogin)).perform(
                 replaceText(SENHA),
@@ -129,7 +138,7 @@ class CampusHubE2ETest {
             esperarAte {
                 onView(withId(R.id.textoTituloDetalhes))
                     .check(matches(withText(TITULO_EVENTO)))
-                onView(withId(R.id.botaoInscrever)).perform(scrollTo())
+                onView(withId(R.id.botaoFavoritar)).perform(scrollTo())
                 onView(
                     allOf(
                         withId(R.id.botaoInscrever),
@@ -138,15 +147,20 @@ class CampusHubE2ETest {
                     )
                 ).check(matches(isDisplayed()))
             }
-            onView(withId(R.id.botaoInscrever)).perform(scrollTo(), click())
+            onView(withId(R.id.botaoFavoritar)).perform(scrollTo())
+            onView(withId(R.id.botaoInscrever)).perform(click())
 
             esperarAte {
                 onView(withId(R.id.botaoInscrever))
                     .check(matches(withText(R.string.cancelar_inscricao)))
             }
-            onView(withId(R.id.botaoVoltarDetalhes)).perform(scrollTo(), click())
-            onView(withId(R.id.botaoVoltarEventos)).perform(click())
-            onView(withId(R.id.botaoMeusEventos)).perform(scrollTo(), click())
+            pressBack()
+            esperarAte {
+                onView(withId(R.id.botaoVoltarEventos)).perform(click())
+            }
+            esperarAte {
+                onView(withId(R.id.botaoMeusEventos)).perform(scrollTo(), click())
+            }
 
             esperarAte {
                 onView(withText(TITULO_EVENTO)).check(matches(isDisplayed()))
@@ -173,18 +187,37 @@ class CampusHubE2ETest {
         return "$tipo-${System.nanoTime()}@campushub.test"
     }
 
-    private fun garantirCampusHubEmPrimeiroPlano(
-        tela: ActivityScenario<LoginActivity>
-    ) {
+    private fun garantirCampusHubEmPrimeiroPlano() {
         val dispositivo = UiDevice.getInstance(
             InstrumentationRegistry.getInstrumentation()
         )
 
-        SystemClock.sleep(1_000)
-        if (dispositivo.currentPackageName != "com.laurencekl.campushub") {
-            dispositivo.pressBack()
-            SystemClock.sleep(1_000)
-            tela.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED)
+        if (dispositivo.currentPackageName == "com.laurencekl.campushub") return
+
+        repeat(10) {
+            trazerTarefaCampusHubParaFrente()
+            SystemClock.sleep(500)
+
+            if (dispositivo.currentPackageName == "com.laurencekl.campushub") return
+        }
+    }
+
+    private fun trazerTarefaCampusHubParaFrente() {
+        val instrumentacao = InstrumentationRegistry.getInstrumentation()
+        val contexto = instrumentacao.targetContext
+        val gerenciador = contexto.getSystemService(ActivityManager::class.java)
+        val tarefa = gerenciador.appTasks.firstOrNull { appTask ->
+            val informacoes = appTask.taskInfo ?: return@firstOrNull false
+            informacoes.baseIntent.component?.packageName == contexto.packageName ||
+                informacoes.topActivity?.packageName == contexto.packageName
+        }
+
+        if (tarefa != null) {
+            tarefa.moveToFront()
+        } else {
+            val intent = Intent(contexto, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            contexto.startActivity(intent)
         }
     }
 
@@ -192,6 +225,8 @@ class CampusHubE2ETest {
         var ultimoErro: Throwable? = null
 
         repeat(40) {
+            garantirCampusHubEmPrimeiroPlano()
+
             try {
                 verificacao()
                 return
@@ -202,5 +237,16 @@ class CampusHubE2ETest {
         }
 
         throw AssertionError("A tela esperada nao apareceu.", ultimoErro)
+    }
+
+    private fun clicarDiretamente() = object : ViewAction {
+        override fun getConstraints(): Matcher<View> = isEnabled()
+
+        override fun getDescription() = "executar o clique do botao"
+
+        override fun perform(uiController: UiController, view: View) {
+            view.performClick()
+            uiController.loopMainThreadUntilIdle()
+        }
     }
 }
