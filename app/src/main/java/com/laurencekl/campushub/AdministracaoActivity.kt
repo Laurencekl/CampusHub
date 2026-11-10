@@ -9,6 +9,7 @@ import android.widget.ProgressBar
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -69,6 +70,7 @@ class AdministracaoActivity : AppCompatActivity() {
         val local = campoLocal.text.toString().trim()
         val endereco = campoEndereco.text.toString().trim()
         val vagas = campoVagas.text.toString().toLongOrNull()
+        val usuario = FirebaseAuth.getInstance().currentUser ?: return
 
         if (!validarCampos(titulo, descricao, data, horario, local, endereco, vagas)) {
             return
@@ -83,7 +85,9 @@ class AdministracaoActivity : AppCompatActivity() {
             "endereco" to endereco,
             "categoria" to campoCategoria.selectedItem.toString(),
             "limiteVagas" to vagas!!,
-            "inscritos" to 0L
+            "inscritos" to 0L,
+            "organizadorId" to usuario.uid,
+            "organizadorNome" to (usuario.displayName ?: usuario.email.orEmpty())
         )
 
         mostrarCarregamento(true)
