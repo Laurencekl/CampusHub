@@ -14,6 +14,7 @@ class HomeActivity : AppCompatActivity() {
 
     private lateinit var textoQuantidadeInscricoes: TextView
     private lateinit var textoQuantidadeFavoritos: TextView
+    private lateinit var textoPerfilUsuario: TextView
     private lateinit var botaoAdministracao: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,6 +23,7 @@ class HomeActivity : AppCompatActivity() {
 
         textoQuantidadeInscricoes = findViewById(R.id.textoQuantidadeInscricoes)
         textoQuantidadeFavoritos = findViewById(R.id.textoQuantidadeFavoritos)
+        textoPerfilUsuario = findViewById(R.id.textoPerfilUsuario)
         val botaoEventos = findViewById<Button>(R.id.botaoEventos)
         val botaoMeusEventos = findViewById<Button>(R.id.botaoMeusEventos)
         val botaoMeusFavoritos = findViewById<Button>(R.id.botaoMeusFavoritos)
@@ -127,18 +129,34 @@ class HomeActivity : AppCompatActivity() {
         }
 
         FirebaseFirestore.getInstance()
-            .collection("administradores")
+            .collection("usuarios")
             .document(usuario.uid)
             .get()
             .addOnSuccessListener { documento ->
-                botaoAdministracao.visibility = if (documento.exists()) {
-                    View.VISIBLE
+                if (documento.getString("perfil") == "organizador") {
+                    mostrarPerfil(true)
                 } else {
-                    View.GONE
+                    verificarAdministradorAntigo(usuario.uid)
                 }
             }
             .addOnFailureListener {
-                botaoAdministracao.visibility = View.GONE
+                verificarAdministradorAntigo(usuario.uid)
             }
+    }
+
+    private fun verificarAdministradorAntigo(usuarioId: String) {
+        FirebaseFirestore.getInstance()
+            .collection("administradores")
+            .document(usuarioId)
+            .get()
+            .addOnSuccessListener { mostrarPerfil(it.exists()) }
+            .addOnFailureListener { mostrarPerfil(false) }
+    }
+
+    private fun mostrarPerfil(organizador: Boolean) {
+        textoPerfilUsuario.setText(
+            if (organizador) R.string.perfil_organizador else R.string.perfil_aluno
+        )
+        botaoAdministracao.visibility = if (organizador) View.VISIBLE else View.GONE
     }
 }

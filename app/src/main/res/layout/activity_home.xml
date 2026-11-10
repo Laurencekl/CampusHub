@@ -52,6 +52,15 @@
                 android:textSize="15sp" />
 
             <TextView
+                android:id="@+id/textoPerfilUsuario"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/perfil_aluno"
+                android:textColor="@color/azul_principal"
+                android:textStyle="bold" />
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"

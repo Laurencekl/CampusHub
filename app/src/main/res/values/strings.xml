@@ -41,6 +41,8 @@
     <string name="data_horario_invalido">Informe a data e o horário nos formatos indicados.</string>
     <string name="vagas_invalidas">Informe uma quantidade de vagas maior que zero.</string>
     <string name="usuario">Aluno</string>
+    <string name="perfil_aluno">Perfil: Aluno</string>
+    <string name="perfil_organizador">Perfil: Organizador</string>
     <string name="sair">Sair</string>
     <string name="confirmar_saida_titulo">Sair da conta?</string>
     <string name="confirmar_saida_mensagem">Deseja realmente sair da sua conta?</string>
