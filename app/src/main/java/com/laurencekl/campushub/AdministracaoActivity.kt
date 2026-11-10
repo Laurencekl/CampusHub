@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Spinner
@@ -24,6 +25,7 @@ class AdministracaoActivity : AppCompatActivity() {
     private lateinit var campoEndereco: EditText
     private lateinit var campoVagas: EditText
     private lateinit var campoCategoria: Spinner
+    private lateinit var campoPublicar: CheckBox
     private lateinit var botaoCadastrar: Button
     private lateinit var progresso: ProgressBar
 
@@ -39,6 +41,7 @@ class AdministracaoActivity : AppCompatActivity() {
         campoEndereco = findViewById(R.id.campoEnderecoEvento)
         campoVagas = findViewById(R.id.campoVagasEvento)
         campoCategoria = findViewById(R.id.campoCategoriaEvento)
+        campoPublicar = findViewById(R.id.campoPublicarEvento)
         botaoCadastrar = findViewById(R.id.botaoCadastrarEvento)
         progresso = findViewById(R.id.progressoCadastrarEvento)
 
@@ -87,7 +90,8 @@ class AdministracaoActivity : AppCompatActivity() {
             "limiteVagas" to vagas!!,
             "inscritos" to 0L,
             "organizadorId" to usuario.uid,
-            "organizadorNome" to (usuario.displayName ?: usuario.email.orEmpty())
+            "organizadorNome" to (usuario.displayName ?: usuario.email.orEmpty()),
+            "status" to if (campoPublicar.isChecked) "publicado" else "rascunho"
         )
 
         mostrarCarregamento(true)
@@ -165,6 +169,7 @@ class AdministracaoActivity : AppCompatActivity() {
         campoEndereco.text.clear()
         campoVagas.text.clear()
         campoCategoria.setSelection(0)
+        campoPublicar.isChecked = false
         campoTitulo.requestFocus()
     }
 }

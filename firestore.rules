@@ -19,7 +19,8 @@ service cloud.firestore {
     match /eventos/{eventoId} {
       allow read: if request.auth != null;
       allow create: if (isAdmin() || isOrganizer())
-        && request.resource.data.organizadorId == request.auth.uid;
+        && request.resource.data.organizadorId == request.auth.uid
+        && request.resource.data.status in ["rascunho", "publicado"];
       allow delete: if false;
       allow update: if request.auth != null
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['inscritos'])

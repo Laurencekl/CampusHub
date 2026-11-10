@@ -183,6 +183,13 @@
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <CheckBox
+            android:id="@+id/campoPublicarEvento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/publicar_evento_agora" />
+
         <ProgressBar
             android:id="@+id/progressoCadastrarEvento"
             android:layout_width="wrap_content"

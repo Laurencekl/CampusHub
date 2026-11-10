@@ -36,6 +36,7 @@
     <string name="categoria_evento">Categoria</string>
     <string name="limite_vagas">Limite de vagas</string>
     <string name="cadastrar_evento">Cadastrar evento</string>
+    <string name="publicar_evento_agora">Publicar evento agora</string>
     <string name="evento_cadastrado">Evento cadastrado com sucesso!</string>
     <string name="erro_cadastrar_evento">Não foi possível cadastrar o evento.</string>
     <string name="data_horario_invalido">Informe a data e o horário nos formatos indicados.</string>

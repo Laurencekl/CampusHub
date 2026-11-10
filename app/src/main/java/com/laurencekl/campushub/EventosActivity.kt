@@ -185,6 +185,8 @@ class EventosActivity : AppCompatActivity() {
             .addOnSuccessListener { documentos ->
                 val eventos = documentos.map { documento ->
                     documento.toObject(Evento::class.java).copy(id = documento.id)
+                }.filter { evento ->
+                    evento.status == "publicado"
                 }.sortedWith(
                     compareBy<Evento> { it.estaEncerrado() }
                         .thenBy { it.dataParaOrdenacao() }
