@@ -29,6 +29,16 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    match /usuarios/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.perfil == "aluno";
+      allow update: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.perfil == resource.data.perfil;
+    }
+
     match /eventos/{eventoId}/comentarios/{comentarioId} {
       allow read: if request.auth != null;
 

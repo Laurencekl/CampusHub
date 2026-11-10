@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
 
 class CadastroActivity : AppCompatActivity() {
 
@@ -109,6 +110,23 @@ class CadastroActivity : AppCompatActivity() {
 
         autenticacao.currentUser?.updateProfile(alteracaoPerfil)
             ?.addOnCompleteListener {
+                salvarPerfil(nome)
+            }
+    }
+
+    private fun salvarPerfil(nome: String) {
+        val usuario = autenticacao.currentUser ?: return
+        val perfil = hashMapOf(
+            "nome" to nome,
+            "email" to usuario.email.orEmpty(),
+            "perfil" to "aluno"
+        )
+
+        FirebaseFirestore.getInstance()
+            .collection("usuarios")
+            .document(usuario.uid)
+            .set(perfil)
+            .addOnCompleteListener {
                 mostrarCarregamento(false)
                 Toast.makeText(this, R.string.conta_criada, Toast.LENGTH_LONG).show()
                 abrirTelaInicial()
