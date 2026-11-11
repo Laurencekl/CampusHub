@@ -50,13 +50,19 @@
             android:textColor="@color/texto_principal"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/textoEventosOrganizador"
+        <Spinner
+            android:id="@+id/seletorEventosOrganizador"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="@string/carregando_eventos_organizador"
-            android:textColor="@color/texto_secundario" />
+            android:contentDescription="@string/seus_eventos_organizador" />
+
+        <Button
+            android:id="@+id/botaoAlterarStatusEvento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/publicar_encerrar_evento" />
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"

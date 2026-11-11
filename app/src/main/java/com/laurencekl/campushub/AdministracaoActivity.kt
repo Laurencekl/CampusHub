@@ -8,7 +8,6 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Spinner
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -27,9 +26,10 @@ class AdministracaoActivity : AppCompatActivity() {
     private lateinit var campoVagas: EditText
     private lateinit var campoCategoria: Spinner
     private lateinit var campoPublicar: CheckBox
-    private lateinit var textoEventos: TextView
+    private lateinit var seletorEventos: Spinner
     private lateinit var botaoCadastrar: Button
     private lateinit var progresso: ProgressBar
+    private val eventosOrganizador = mutableListOf<Pair<String, String>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +44,7 @@ class AdministracaoActivity : AppCompatActivity() {
         campoVagas = findViewById(R.id.campoVagasEvento)
         campoCategoria = findViewById(R.id.campoCategoriaEvento)
         campoPublicar = findViewById(R.id.campoPublicarEvento)
-        textoEventos = findViewById(R.id.textoEventosOrganizador)
+        seletorEventos = findViewById(R.id.seletorEventosOrganizador)
         botaoCadastrar = findViewById(R.id.botaoCadastrarEvento)
         progresso = findViewById(R.id.progressoCadastrarEvento)
 
@@ -62,6 +62,10 @@ class AdministracaoActivity : AppCompatActivity() {
 
         botaoCadastrar.setOnClickListener {
             cadastrarEvento()
+        }
+
+        findViewById<Button>(R.id.botaoAlterarStatusEvento).setOnClickListener {
+            alterarStatusEvento()
         }
 
         findViewById<Button>(R.id.botaoVoltarAdministracao).setOnClickListener {
@@ -122,20 +126,53 @@ class AdministracaoActivity : AppCompatActivity() {
             .whereEqualTo("organizadorId", usuario.uid)
             .get()
             .addOnSuccessListener { documentos ->
-                textoEventos.text = if (documentos.isEmpty) {
-                    getString(R.string.nenhum_evento_organizador)
-                } else {
-                    documentos.joinToString("\n") { documento ->
-                        getString(
-                            R.string.evento_organizador_item,
-                            documento.getString("titulo").orEmpty(),
-                            documento.getString("status") ?: "publicado"
-                        )
-                    }
-                }
+                eventosOrganizador.clear()
+
+                val itens = documentos.map { documento ->
+                    val status = documento.getString("status") ?: "publicado"
+                    eventosOrganizador.add(documento.id to status)
+                    getString(
+                        R.string.evento_organizador_item,
+                        documento.getString("titulo").orEmpty(),
+                        status
+                    )
+                }.ifEmpty { listOf(getString(R.string.nenhum_evento_organizador)) }
+
+                seletorEventos.adapter = ArrayAdapter(
+                    this,
+                    android.R.layout.simple_spinner_dropdown_item,
+                    itens
+                )
             }
             .addOnFailureListener {
-                textoEventos.setText(R.string.erro_eventos_organizador)
+                Toast.makeText(this, R.string.erro_eventos_organizador, Toast.LENGTH_LONG).show()
+            }
+    }
+
+    private fun alterarStatusEvento() {
+        val posicao = seletorEventos.selectedItemPosition
+        val evento = eventosOrganizador.getOrNull(posicao) ?: return
+
+        val novoStatus = when (evento.second) {
+            "rascunho" -> "publicado"
+            "publicado" -> "encerrado"
+            else -> null
+        }
+
+        if (novoStatus == null) {
+            Toast.makeText(this, R.string.evento_ja_encerrado, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        FirebaseFirestore.getInstance().collection("eventos")
+            .document(evento.first)
+            .update("status", novoStatus)
+            .addOnSuccessListener {
+                Toast.makeText(this, R.string.status_evento_atualizado, Toast.LENGTH_SHORT).show()
+                carregarEventosDoOrganizador()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, R.string.erro_status_evento, Toast.LENGTH_LONG).show()
             }
     }
 
