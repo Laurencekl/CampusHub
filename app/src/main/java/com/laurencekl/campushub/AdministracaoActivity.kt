@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -30,6 +31,8 @@ class AdministracaoActivity : AppCompatActivity() {
     private lateinit var botaoCadastrar: Button
     private lateinit var progresso: ProgressBar
     private val eventosOrganizador = mutableListOf<Pair<String, String>>()
+    private var eventoEmEdicao: String? = null
+    private var inscritosEventoEmEdicao = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +71,10 @@ class AdministracaoActivity : AppCompatActivity() {
             alterarStatusEvento()
         }
 
+        findViewById<Button>(R.id.botaoEditarEvento).setOnClickListener {
+            carregarEventoParaEdicao()
+        }
+
         findViewById<Button>(R.id.botaoVoltarAdministracao).setOnClickListener {
             finish()
         }
@@ -95,26 +102,62 @@ class AdministracaoActivity : AppCompatActivity() {
             "local" to local,
             "endereco" to endereco,
             "categoria" to campoCategoria.selectedItem.toString(),
-            "limiteVagas" to vagas!!,
-            "inscritos" to 0L,
-            "organizadorId" to usuario.uid,
-            "organizadorNome" to (usuario.displayName ?: usuario.email.orEmpty()),
-            "status" to if (campoPublicar.isChecked) "publicado" else "rascunho"
+            "limiteVagas" to vagas!!
         )
 
+        val editando = eventoEmEdicao != null
+        if (!editando) {
+            evento["inscritos"] = 0L
+            evento["organizadorId"] = usuario.uid
+            evento["organizadorNome"] = usuario.displayName ?: usuario.email.orEmpty()
+            evento["status"] = if (campoPublicar.isChecked) "publicado" else "rascunho"
+        }
+
         mostrarCarregamento(true)
-        FirebaseFirestore.getInstance()
-            .collection("eventos")
-            .add(evento)
+        val colecao = FirebaseFirestore.getInstance().collection("eventos")
+        val documento = colecao.document(eventoEmEdicao ?: colecao.document().id)
+        documento.set(evento, SetOptions.merge())
             .addOnSuccessListener {
                 mostrarCarregamento(false)
                 limparCampos()
                 carregarEventosDoOrganizador()
-                Toast.makeText(this, R.string.evento_cadastrado, Toast.LENGTH_LONG).show()
+                val mensagem = if (editando) R.string.evento_editado else R.string.evento_cadastrado
+                Toast.makeText(this, mensagem, Toast.LENGTH_LONG).show()
             }
             .addOnFailureListener {
                 mostrarCarregamento(false)
                 Toast.makeText(this, R.string.erro_cadastrar_evento, Toast.LENGTH_LONG).show()
+            }
+    }
+
+    private fun carregarEventoParaEdicao() {
+        val evento = eventosOrganizador.getOrNull(seletorEventos.selectedItemPosition) ?: return
+
+        FirebaseFirestore.getInstance().collection("eventos").document(evento.first).get()
+            .addOnSuccessListener { documento ->
+                campoTitulo.setText(documento.getString("titulo"))
+                campoDescricao.setText(documento.getString("descricao"))
+                campoData.setText(documento.getString("data"))
+                campoHorario.setText(documento.getString("horario"))
+                campoLocal.setText(documento.getString("local"))
+                campoEndereco.setText(documento.getString("endereco"))
+                campoVagas.setText(documento.getLong("limiteVagas")?.toString())
+                inscritosEventoEmEdicao = documento.getLong("inscritos") ?: 0L
+
+                val categoria = documento.getString("categoria")
+                for (posicao in 0 until campoCategoria.count) {
+                    if (campoCategoria.getItemAtPosition(posicao).toString() == categoria) {
+                        campoCategoria.setSelection(posicao)
+                    }
+                }
+
+                eventoEmEdicao = documento.id
+                campoPublicar.visibility = View.GONE
+                botaoCadastrar.setText(R.string.salvar_alteracoes)
+                campoTitulo.requestFocus()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, R.string.erro_eventos_organizador, Toast.LENGTH_LONG).show()
             }
     }
 
@@ -219,6 +262,12 @@ class AdministracaoActivity : AppCompatActivity() {
             return false
         }
 
+        if (vagas < inscritosEventoEmEdicao) {
+            campoVagas.error = getString(R.string.limite_menor_inscritos)
+            campoVagas.requestFocus()
+            return false
+        }
+
         return true
     }
 
@@ -228,6 +277,8 @@ class AdministracaoActivity : AppCompatActivity() {
     }
 
     private fun limparCampos() {
+        eventoEmEdicao = null
+        inscritosEventoEmEdicao = 0L
         campoTitulo.text.clear()
         campoDescricao.text.clear()
         campoData.text.clear()
@@ -237,6 +288,8 @@ class AdministracaoActivity : AppCompatActivity() {
         campoVagas.text.clear()
         campoCategoria.setSelection(0)
         campoPublicar.isChecked = false
+        campoPublicar.visibility = View.VISIBLE
+        botaoCadastrar.setText(R.string.cadastrar_evento)
         campoTitulo.requestFocus()
     }
 }

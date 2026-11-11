@@ -64,6 +64,13 @@
             android:layout_marginTop="8dp"
             android:text="@string/publicar_encerrar_evento" />
 
+        <Button
+            android:id="@+id/botaoEditarEvento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/editar_evento_selecionado" />
+
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
