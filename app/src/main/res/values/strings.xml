@@ -30,6 +30,11 @@
     <string name="administracao">Administração</string>
     <string name="administracao_titulo">Cadastrar evento</string>
     <string name="administracao_subtitulo">Adicione uma nova atividade ao CampusHub.</string>
+    <string name="seus_eventos_organizador">Seus eventos</string>
+    <string name="carregando_eventos_organizador">Carregando seus eventos...</string>
+    <string name="nenhum_evento_organizador">Você ainda não criou eventos.</string>
+    <string name="erro_eventos_organizador">Não foi possível carregar seus eventos.</string>
+    <string name="evento_organizador_item">• %1$s — %2$s</string>
     <string name="titulo_evento">Título</string>
     <string name="data_evento_exemplo">Data (dd/MM/aaaa)</string>
     <string name="horario_evento_exemplo">Horário (HH:mm)</string>

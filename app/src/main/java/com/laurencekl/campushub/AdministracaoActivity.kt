@@ -8,6 +8,7 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -26,6 +27,7 @@ class AdministracaoActivity : AppCompatActivity() {
     private lateinit var campoVagas: EditText
     private lateinit var campoCategoria: Spinner
     private lateinit var campoPublicar: CheckBox
+    private lateinit var textoEventos: TextView
     private lateinit var botaoCadastrar: Button
     private lateinit var progresso: ProgressBar
 
@@ -42,6 +44,7 @@ class AdministracaoActivity : AppCompatActivity() {
         campoVagas = findViewById(R.id.campoVagasEvento)
         campoCategoria = findViewById(R.id.campoCategoriaEvento)
         campoPublicar = findViewById(R.id.campoPublicarEvento)
+        textoEventos = findViewById(R.id.textoEventosOrganizador)
         botaoCadastrar = findViewById(R.id.botaoCadastrarEvento)
         progresso = findViewById(R.id.progressoCadastrarEvento)
 
@@ -55,6 +58,7 @@ class AdministracaoActivity : AppCompatActivity() {
             android.R.layout.simple_spinner_dropdown_item,
             categorias
         )
+        carregarEventosDoOrganizador()
 
         botaoCadastrar.setOnClickListener {
             cadastrarEvento()
@@ -101,11 +105,37 @@ class AdministracaoActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 mostrarCarregamento(false)
                 limparCampos()
+                carregarEventosDoOrganizador()
                 Toast.makeText(this, R.string.evento_cadastrado, Toast.LENGTH_LONG).show()
             }
             .addOnFailureListener {
                 mostrarCarregamento(false)
                 Toast.makeText(this, R.string.erro_cadastrar_evento, Toast.LENGTH_LONG).show()
+            }
+    }
+
+    private fun carregarEventosDoOrganizador() {
+        val usuario = FirebaseAuth.getInstance().currentUser ?: return
+
+        FirebaseFirestore.getInstance()
+            .collection("eventos")
+            .whereEqualTo("organizadorId", usuario.uid)
+            .get()
+            .addOnSuccessListener { documentos ->
+                textoEventos.text = if (documentos.isEmpty) {
+                    getString(R.string.nenhum_evento_organizador)
+                } else {
+                    documentos.joinToString("\n") { documento ->
+                        getString(
+                            R.string.evento_organizador_item,
+                            documento.getString("titulo").orEmpty(),
+                            documento.getString("status") ?: "publicado"
+                        )
+                    }
+                }
+            }
+            .addOnFailureListener {
+                textoEventos.setText(R.string.erro_eventos_organizador)
             }
     }
 
