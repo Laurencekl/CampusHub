@@ -52,6 +52,7 @@ class MeusEventosActivity : AppCompatActivity() {
             intent.putExtra("categoria", eventoSelecionado.categoria)
             intent.putExtra("limiteVagas", eventoSelecionado.limiteVagas)
             intent.putExtra("inscritos", eventoSelecionado.inscritos)
+            intent.putExtra("status", eventoSelecionado.status)
 
             startActivity(intent)
         }

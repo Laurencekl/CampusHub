@@ -220,6 +220,12 @@
     <string name="vagas_evento">Vagas</string>
     <string name="vagas_disponiveis">%1$d de %2$d vagas disponíveis</string>
     <string name="evento_lotado">Evento lotado</string>
+    <string name="entrar_lista_espera">Entrar na lista de espera</string>
+    <string name="sair_lista_espera">Sair da lista de espera</string>
+    <string name="na_lista_espera">Você está na lista de espera</string>
+    <string name="adicionado_lista_espera">Você entrou na lista de espera.</string>
+    <string name="removido_lista_espera">Você saiu da lista de espera.</string>
+    <string name="erro_lista_espera">Não foi possível atualizar a lista de espera.</string>
     <string name="descricao_evento">Sobre o evento</string>
     <string name="inscrever_evento">Inscrever-se</string>
     <string name="compartilhar_evento">Compartilhar evento</string>

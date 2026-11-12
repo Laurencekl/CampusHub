@@ -38,9 +38,11 @@ class DetalhesEventoActivity : AppCompatActivity() {
         val local = intent.getStringExtra("local").orEmpty()
         val categoria = intent.getStringExtra("categoria")
             ?: getString(R.string.categoria_tecnologia)
+        val statusEvento = intent.getStringExtra("status") ?: "publicado"
         var limiteVagas = intent.getLongExtra("limiteVagas", 30)
         var quantidadeInscritos = intent.getLongExtra("inscritos", 0)
         val botaoInscrever = findViewById<Button>(R.id.botaoInscrever)
+        val botaoListaEspera = findViewById<Button>(R.id.botaoListaEspera)
         val botaoFavoritar = findViewById<Button>(R.id.botaoFavoritar)
         val textoVagas = findViewById<TextView>(R.id.textoVagasDetalhes)
         val textoEndereco = findViewById<TextView>(R.id.textoEnderecoDetalhes)
@@ -64,9 +66,11 @@ class DetalhesEventoActivity : AppCompatActivity() {
         val usuario = FirebaseAuth.getInstance().currentUser
         val bancoDados = FirebaseFirestore.getInstance()
         var inscrito = false
+        var naListaEspera = false
         var favorito = false
         var possuiAvaliacao = false
-        val eventoEncerrado = Evento(data = data, horario = horario).estaEncerrado()
+        val eventoEncerrado = statusEvento == "encerrado" ||
+            Evento(data = data, horario = horario).estaEncerrado()
 
         val referenciaInscricao = if (usuario != null && eventoId.isNotEmpty()) {
             bancoDados
@@ -80,6 +84,12 @@ class DetalhesEventoActivity : AppCompatActivity() {
 
         val referenciaEvento = if (eventoId.isNotEmpty()) {
             bancoDados.collection("eventos").document(eventoId)
+        } else {
+            null
+        }
+
+        val referenciaListaEspera = if (usuario != null) {
+            referenciaEvento?.collection("listaEspera")?.document(usuario.uid)
         } else {
             null
         }
@@ -197,6 +207,15 @@ class DetalhesEventoActivity : AppCompatActivity() {
         fun atualizarBotao() {
             val eventoLotado = quantidadeInscritos >= limiteVagas
 
+            botaoListaEspera.visibility = if (
+                !inscrito && !eventoEncerrado && (eventoLotado || naListaEspera)
+            ) View.VISIBLE else View.GONE
+            botaoListaEspera.text = if (naListaEspera) {
+                getString(R.string.sair_lista_espera)
+            } else {
+                getString(R.string.entrar_lista_espera)
+            }
+
             when {
                 inscrito -> {
                     botaoInscrever.text = getString(R.string.cancelar_inscricao)
@@ -204,6 +223,10 @@ class DetalhesEventoActivity : AppCompatActivity() {
                 }
                 eventoEncerrado -> {
                     botaoInscrever.text = getString(R.string.evento_encerrado)
+                    botaoInscrever.isEnabled = false
+                }
+                naListaEspera -> {
+                    botaoInscrever.text = getString(R.string.na_lista_espera)
                     botaoInscrever.isEnabled = false
                 }
                 eventoLotado -> {
@@ -256,6 +279,12 @@ class DetalhesEventoActivity : AppCompatActivity() {
         } else {
             configurarAvaliacaoDoUsuario()
         }
+
+        referenciaListaEspera?.get()
+            ?.addOnSuccessListener { documento ->
+                naListaEspera = documento.exists()
+                atualizarBotao()
+            }
 
         referenciaEvento?.get()
             ?.addOnSuccessListener { documento ->
@@ -404,6 +433,39 @@ class DetalhesEventoActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
+            }
+        }
+
+        botaoListaEspera.setOnClickListener {
+            if (usuario == null || referenciaListaEspera == null) return@setOnClickListener
+
+            botaoListaEspera.isEnabled = false
+            val operacao = if (naListaEspera) {
+                referenciaListaEspera.delete()
+            } else {
+                referenciaListaEspera.set(
+                    mapOf(
+                        "usuarioId" to usuario.uid,
+                        "nome" to (usuario.displayName ?: usuario.email.orEmpty()),
+                        "email" to usuario.email.orEmpty(),
+                        "entrouEm" to FieldValue.serverTimestamp()
+                    )
+                )
+            }
+
+            operacao.addOnSuccessListener {
+                naListaEspera = !naListaEspera
+                botaoListaEspera.isEnabled = true
+                atualizarBotao()
+                val mensagem = if (naListaEspera) {
+                    R.string.adicionado_lista_espera
+                } else {
+                    R.string.removido_lista_espera
+                }
+                Toast.makeText(this, mensagem, Toast.LENGTH_SHORT).show()
+            }.addOnFailureListener {
+                botaoListaEspera.isEnabled = true
+                Toast.makeText(this, R.string.erro_lista_espera, Toast.LENGTH_SHORT).show()
             }
         }
 
