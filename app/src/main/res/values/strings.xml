@@ -223,6 +223,8 @@
     <string name="entrar_lista_espera">Entrar na lista de espera</string>
     <string name="sair_lista_espera">Sair da lista de espera</string>
     <string name="na_lista_espera">Você está na lista de espera</string>
+    <string name="confirmar_vaga">Confirmar inscrição disponível</string>
+    <string name="vaga_reservada_lista">Vaga reservada para a lista de espera</string>
     <string name="adicionado_lista_espera">Você entrou na lista de espera.</string>
     <string name="removido_lista_espera">Você saiu da lista de espera.</string>
     <string name="erro_lista_espera">Não foi possível atualizar a lista de espera.</string>

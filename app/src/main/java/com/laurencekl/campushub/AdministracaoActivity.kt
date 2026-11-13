@@ -111,6 +111,7 @@ class AdministracaoActivity : AppCompatActivity() {
             evento["organizadorId"] = usuario.uid
             evento["organizadorNome"] = usuario.displayName ?: usuario.email.orEmpty()
             evento["status"] = if (campoPublicar.isChecked) "publicado" else "rascunho"
+            evento["filaEspera"] = emptyList<String>()
         }
 
         mostrarCarregamento(true)

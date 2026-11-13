@@ -41,22 +41,52 @@ service cloud.firestore {
           .data.organizadorId == request.auth.uid;
     }
 
+    function changesWaitingList() {
+      let oldList = resource.data.get('filaEspera', []);
+      let newList = request.resource.data.get('filaEspera', []);
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['filaEspera'])
+        && newList is list
+        && (
+          (newList == oldList.concat([request.auth.uid])
+            && !(request.auth.uid in oldList)
+            && resource.data.inscritos >= resource.data.limiteVagas)
+          || (newList == oldList.removeAll([request.auth.uid])
+            && request.auth.uid in oldList)
+        );
+    }
+
+    function confirmsWaitingList() {
+      let oldList = resource.data.get('filaEspera', []);
+      let newList = request.resource.data.get('filaEspera', []);
+      return request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['inscritos', 'filaEspera'])
+        && oldList.size() > 0
+        && oldList[0] == request.auth.uid
+        && newList == oldList.removeAll([request.auth.uid])
+        && request.resource.data.inscritos == resource.data.inscritos + 1
+        && request.resource.data.inscritos <= resource.data.limiteVagas;
+    }
+
     match /eventos/{eventoId} {
       allow read: if request.auth != null;
       allow create: if (isAdmin() || isOrganizer())
         && request.resource.data.organizadorId == request.auth.uid
-        && request.resource.data.status in ["rascunho", "publicado"];
+        && request.resource.data.status in ["rascunho", "publicado"]
+        && request.resource.data.filaEspera is list;
       allow delete: if false;
       allow update: if request.auth != null && (
         ((isAdmin() || isOrganizer())
           && (changesOwnEventStatus() || changesOwnEventDetails()))
+        || changesWaitingList()
+        || confirmsWaitingList()
         || (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['inscritos'])
           && request.resource.data.inscritos is int
           && request.resource.data.inscritos >= 0
           && request.resource.data.inscritos <= resource.data.limiteVagas
           && (
-            request.resource.data.inscritos == resource.data.inscritos + 1
+            (request.resource.data.inscritos == resource.data.inscritos + 1
+              && resource.data.get('filaEspera', []).size() == 0)
             || request.resource.data.inscritos == resource.data.inscritos - 1
           )
         )
@@ -120,9 +150,16 @@ service cloud.firestore {
         && request.resource.data.nome is string
         && request.resource.data.email is string
         && get(/databases/$(database)/documents/eventos/$(eventoId)).data.status == "publicado"
+        && request.auth.uid in getAfter(
+          /databases/$(database)/documents/eventos/$(eventoId)
+        ).data.get('filaEspera', [])
         && get(/databases/$(database)/documents/eventos/$(eventoId)).data.inscritos
           >= get(/databases/$(database)/documents/eventos/$(eventoId)).data.limiteVagas;
-      allow delete: if request.auth != null && request.auth.uid == usuarioId;
+      allow delete: if request.auth != null
+        && request.auth.uid == usuarioId
+        && !(request.auth.uid in getAfter(
+          /databases/$(database)/documents/eventos/$(eventoId)
+        ).data.get('filaEspera', []));
       allow update: if false;
     }
 

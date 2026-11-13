@@ -67,6 +67,7 @@ class DetalhesEventoActivity : AppCompatActivity() {
         val bancoDados = FirebaseFirestore.getInstance()
         var inscrito = false
         var naListaEspera = false
+        var filaEspera = emptyList<String>()
         var favorito = false
         var possuiAvaliacao = false
         val eventoEncerrado = statusEvento == "encerrado" ||
@@ -206,6 +207,7 @@ class DetalhesEventoActivity : AppCompatActivity() {
 
         fun atualizarBotao() {
             val eventoLotado = quantidadeInscritos >= limiteVagas
+            val primeiroDaFila = filaEspera.firstOrNull() == usuario?.uid
 
             botaoListaEspera.visibility = if (
                 !inscrito && !eventoEncerrado && (eventoLotado || naListaEspera)
@@ -225,12 +227,20 @@ class DetalhesEventoActivity : AppCompatActivity() {
                     botaoInscrever.text = getString(R.string.evento_encerrado)
                     botaoInscrever.isEnabled = false
                 }
+                naListaEspera && !eventoLotado && primeiroDaFila -> {
+                    botaoInscrever.text = getString(R.string.confirmar_vaga)
+                    botaoInscrever.isEnabled = true
+                }
                 naListaEspera -> {
                     botaoInscrever.text = getString(R.string.na_lista_espera)
                     botaoInscrever.isEnabled = false
                 }
                 eventoLotado -> {
                     botaoInscrever.text = getString(R.string.evento_lotado)
+                    botaoInscrever.isEnabled = false
+                }
+                filaEspera.isNotEmpty() -> {
+                    botaoInscrever.text = getString(R.string.vaga_reservada_lista)
                     botaoInscrever.isEnabled = false
                 }
                 else -> {
@@ -286,20 +296,22 @@ class DetalhesEventoActivity : AppCompatActivity() {
                 atualizarBotao()
             }
 
-        referenciaEvento?.get()
-            ?.addOnSuccessListener { documento ->
+        referenciaEvento?.addSnapshotListener(this) { documento, erro ->
+            if (erro != null || documento == null) {
+                textoEndereco.setText(R.string.erro_carregar_endereco)
+            } else {
                 enderecoEvento = documento.getString("endereco").orEmpty().trim()
                 textoEndereco.text = enderecoEvento.takeIf { it.isNotBlank() }
                     ?: getString(R.string.endereco_nao_informado)
                 botaoVerMapa.isEnabled = enderecoEvento.isNotBlank()
                 limiteVagas = documento.getLong("limiteVagas") ?: 30
                 quantidadeInscritos = documento.getLong("inscritos") ?: 0
+                filaEspera = (documento.get("filaEspera") as? List<*>)
+                    ?.filterIsInstance<String>().orEmpty()
                 atualizarVagas()
                 atualizarBotao()
             }
-            ?.addOnFailureListener {
-                textoEndereco.setText(R.string.erro_carregar_endereco)
-            }
+        }
 
         botaoInscrever.setOnClickListener {
             if (usuario == null || referenciaInscricao == null || referenciaEvento == null) {
@@ -371,6 +383,8 @@ class DetalhesEventoActivity : AppCompatActivity() {
                     val inscricaoAtual = transacao.get(referenciaInscricao)
                     val limiteAtual = evento.getLong("limiteVagas") ?: 30
                     val inscritosAtuais = evento.getLong("inscritos") ?: 0
+                    val filaAtual = (evento.get("filaEspera") as? List<*>)
+                        ?.filterIsInstance<String>().orEmpty()
 
                     if (inscricaoAtual.exists()) {
                         return@runTransaction Pair(limiteAtual, inscritosAtuais)
@@ -379,6 +393,13 @@ class DetalhesEventoActivity : AppCompatActivity() {
                     if (!EventoRegras.temVagas(inscritosAtuais, limiteAtual)) {
                         throw FirebaseFirestoreException(
                             "EVENTO_LOTADO",
+                            FirebaseFirestoreException.Code.ABORTED
+                        )
+                    }
+
+                    if (filaAtual.isNotEmpty() && filaAtual.first() != usuario.uid) {
+                        throw FirebaseFirestoreException(
+                            "VAGA_RESERVADA",
                             FirebaseFirestoreException.Code.ABORTED
                         )
                     }
@@ -397,13 +418,22 @@ class DetalhesEventoActivity : AppCompatActivity() {
                         "inscritoEm" to FieldValue.serverTimestamp()
                     )
 
-                    transacao.update(referenciaEvento, "inscritos", novaQuantidade)
+                    val atualizacaoEvento = mutableMapOf<String, Any>(
+                        "inscritos" to novaQuantidade
+                    )
+                    if (filaAtual.firstOrNull() == usuario.uid) {
+                        atualizacaoEvento["filaEspera"] = filaAtual.drop(1)
+                        referenciaListaEspera?.let { transacao.delete(it) }
+                    }
+
+                    transacao.update(referenciaEvento, atualizacaoEvento)
                     transacao.set(referenciaInscricao, inscricao)
 
                     Pair(limiteAtual, novaQuantidade)
                 }
                     .addOnSuccessListener { resultado ->
                         inscrito = true
+                        naListaEspera = false
                         limiteVagas = resultado.first
                         quantidadeInscritos = resultado.second
                         atualizarVagas()
@@ -427,6 +457,8 @@ class DetalhesEventoActivity : AppCompatActivity() {
                             this,
                             if (erro.message == "EVENTO_LOTADO") {
                                 getString(R.string.evento_lotado)
+                            } else if (erro.message == "VAGA_RESERVADA") {
+                                getString(R.string.vaga_reservada_lista)
                             } else {
                                 getString(R.string.erro_inscricao)
                             },
@@ -437,24 +469,45 @@ class DetalhesEventoActivity : AppCompatActivity() {
         }
 
         botaoListaEspera.setOnClickListener {
-            if (usuario == null || referenciaListaEspera == null) return@setOnClickListener
+            if (usuario == null || referenciaListaEspera == null || referenciaEvento == null) {
+                return@setOnClickListener
+            }
 
             botaoListaEspera.isEnabled = false
-            val operacao = if (naListaEspera) {
-                referenciaListaEspera.delete()
-            } else {
-                referenciaListaEspera.set(
-                    mapOf(
+            bancoDados.runTransaction { transacao ->
+                val evento = transacao.get(referenciaEvento)
+                val filaAtual = (evento.get("filaEspera") as? List<*>)
+                    ?.filterIsInstance<String>().orEmpty()
+                val estaNaFila = usuario.uid in filaAtual
+
+                if (estaNaFila) {
+                    transacao.update(referenciaEvento, "filaEspera", filaAtual - usuario.uid)
+                    transacao.delete(referenciaListaEspera)
+                } else {
+                    val inscritosAtuais = evento.getLong("inscritos") ?: 0
+                    val limiteAtual = evento.getLong("limiteVagas") ?: 30
+                    if (inscritosAtuais < limiteAtual) {
+                        throw FirebaseFirestoreException(
+                            "VAGA_DISPONIVEL",
+                            FirebaseFirestoreException.Code.ABORTED
+                        )
+                    }
+
+                    transacao.update(referenciaEvento, "filaEspera", filaAtual + usuario.uid)
+                    transacao.set(
+                        referenciaListaEspera,
+                        mapOf(
                         "usuarioId" to usuario.uid,
                         "nome" to (usuario.displayName ?: usuario.email.orEmpty()),
                         "email" to usuario.email.orEmpty(),
                         "entrouEm" to FieldValue.serverTimestamp()
                     )
-                )
-            }
+                    )
+                }
 
-            operacao.addOnSuccessListener {
-                naListaEspera = !naListaEspera
+                !estaNaFila
+            }.addOnSuccessListener { entrouNaFila ->
+                naListaEspera = entrouNaFila
                 botaoListaEspera.isEnabled = true
                 atualizarBotao()
                 val mensagem = if (naListaEspera) {
