@@ -8,6 +8,7 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -28,6 +29,8 @@ class AdministracaoActivity : AppCompatActivity() {
     private lateinit var campoCategoria: Spinner
     private lateinit var campoPublicar: CheckBox
     private lateinit var seletorEventos: Spinner
+    private lateinit var textoAcompanhamento: TextView
+    private lateinit var seletorParticipantes: Spinner
     private lateinit var botaoCadastrar: Button
     private lateinit var progresso: ProgressBar
     private val eventosOrganizador = mutableListOf<Pair<String, String>>()
@@ -48,6 +51,8 @@ class AdministracaoActivity : AppCompatActivity() {
         campoCategoria = findViewById(R.id.campoCategoriaEvento)
         campoPublicar = findViewById(R.id.campoPublicarEvento)
         seletorEventos = findViewById(R.id.seletorEventosOrganizador)
+        textoAcompanhamento = findViewById(R.id.textoResumoAcompanhamento)
+        seletorParticipantes = findViewById(R.id.seletorParticipantes)
         botaoCadastrar = findViewById(R.id.botaoCadastrarEvento)
         progresso = findViewById(R.id.progressoCadastrarEvento)
 
@@ -73,6 +78,10 @@ class AdministracaoActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.botaoEditarEvento).setOnClickListener {
             carregarEventoParaEdicao()
+        }
+
+        findViewById<Button>(R.id.botaoAcompanharEvento).setOnClickListener {
+            carregarAcompanhamento()
         }
 
         findViewById<Button>(R.id.botaoVoltarAdministracao).setOnClickListener {
@@ -160,6 +169,44 @@ class AdministracaoActivity : AppCompatActivity() {
             .addOnFailureListener {
                 Toast.makeText(this, R.string.erro_eventos_organizador, Toast.LENGTH_LONG).show()
             }
+    }
+
+    private fun carregarAcompanhamento() {
+        val evento = eventosOrganizador.getOrNull(seletorEventos.selectedItemPosition) ?: return
+        val referencia = FirebaseFirestore.getInstance().collection("eventos").document(evento.first)
+
+        referencia.get().addOnSuccessListener { documento ->
+            val inscritos = documento.getLong("inscritos") ?: 0
+            val limite = documento.getLong("limiteVagas") ?: 0
+            val espera = (documento.get("filaEspera") as? List<*>)?.size ?: 0
+
+            referencia.collection("inscritos").get().addOnSuccessListener { registros ->
+                val checkIns = registros.count { it.getBoolean("checkIn") == true }
+                textoAcompanhamento.text = getString(
+                    R.string.resumo_acompanhamento,
+                    inscritos,
+                    limite,
+                    espera,
+                    checkIns
+                )
+
+                val participantes = registros.map { registro ->
+                    val nome = registro.getString("alunoNome").orEmpty()
+                    val email = registro.getString("alunoEmail").orEmpty()
+                    getString(R.string.participante_acompanhamento, nome.ifBlank { email }, email)
+                }.ifEmpty { listOf(getString(R.string.nenhum_participante)) }
+
+                seletorParticipantes.adapter = ArrayAdapter(
+                    this,
+                    android.R.layout.simple_spinner_dropdown_item,
+                    participantes
+                )
+            }.addOnFailureListener {
+                textoAcompanhamento.setText(R.string.erro_acompanhamento)
+            }
+        }.addOnFailureListener {
+            textoAcompanhamento.setText(R.string.erro_acompanhamento)
+        }
     }
 
     private fun carregarEventosDoOrganizador() {

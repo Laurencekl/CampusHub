@@ -285,6 +285,21 @@ class DetalhesEventoActivity : AppCompatActivity() {
                 .get()
                 .addOnSuccessListener { documento ->
                     inscrito = documento.exists()
+                    if (inscrito && usuario != null && referenciaParticipante != null) {
+                        referenciaParticipante.get().addOnSuccessListener { participante ->
+                            if (!participante.exists()) {
+                                referenciaParticipante.set(
+                                    mapOf(
+                                        "eventoId" to eventoId,
+                                        "alunoId" to usuario.uid,
+                                        "alunoNome" to (usuario.displayName ?: usuario.email.orEmpty()),
+                                        "alunoEmail" to usuario.email.orEmpty(),
+                                        "checkIn" to false
+                                    )
+                                )
+                            }
+                        }
+                    }
                     atualizarBotao()
                     configurarAvaliacaoDoUsuario()
                 }
