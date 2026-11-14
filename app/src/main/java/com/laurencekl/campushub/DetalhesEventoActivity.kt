@@ -94,6 +94,12 @@ class DetalhesEventoActivity : AppCompatActivity() {
         } else {
             null
         }
+
+        val referenciaParticipante = if (usuario != null) {
+            referenciaEvento?.collection("inscritos")?.document(usuario.uid)
+        } else {
+            null
+        }
         if (referenciaEvento == null) {
             textoEndereco.setText(R.string.endereco_nao_informado)
         }
@@ -314,7 +320,9 @@ class DetalhesEventoActivity : AppCompatActivity() {
         }
 
         botaoInscrever.setOnClickListener {
-            if (usuario == null || referenciaInscricao == null || referenciaEvento == null) {
+            if (usuario == null || referenciaInscricao == null ||
+                referenciaEvento == null || referenciaParticipante == null
+            ) {
                 Toast.makeText(
                     this,
                     getString(R.string.usuario_nao_autenticado),
@@ -349,6 +357,7 @@ class DetalhesEventoActivity : AppCompatActivity() {
                                 )
                             }
                             transacao.delete(referenciaInscricao)
+                            transacao.delete(referenciaParticipante)
 
                             novaQuantidade
                         }
@@ -413,6 +422,9 @@ class DetalhesEventoActivity : AppCompatActivity() {
                         "horario" to horario,
                         "local" to local,
                         "categoria" to categoria,
+                        "alunoId" to usuario.uid,
+                        "alunoNome" to (usuario.displayName ?: usuario.email.orEmpty()),
+                        "alunoEmail" to usuario.email.orEmpty(),
                         "limiteVagas" to limiteAtual,
                         "inscritos" to novaQuantidade,
                         "inscritoEm" to FieldValue.serverTimestamp()
@@ -428,6 +440,7 @@ class DetalhesEventoActivity : AppCompatActivity() {
 
                     transacao.update(referenciaEvento, atualizacaoEvento)
                     transacao.set(referenciaInscricao, inscricao)
+                    transacao.set(referenciaParticipante, inscricao)
 
                     Pair(limiteAtual, novaQuantidade)
                 }

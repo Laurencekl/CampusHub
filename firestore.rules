@@ -163,6 +163,23 @@ service cloud.firestore {
       allow update: if false;
     }
 
+    match /eventos/{eventoId}/inscritos/{usuarioId} {
+      allow read: if request.auth != null
+        && (request.auth.uid == usuarioId || isAdmin() || ownsEvent(eventoId));
+      allow create: if request.auth != null
+        && request.auth.uid == usuarioId
+        && request.resource.data.alunoId == request.auth.uid
+        && existsAfter(
+          /databases/$(database)/documents/usuarios/$(usuarioId)/inscricoes/$(eventoId)
+        );
+      allow delete: if request.auth != null
+        && request.auth.uid == usuarioId
+        && !existsAfter(
+          /databases/$(database)/documents/usuarios/$(usuarioId)/inscricoes/$(eventoId)
+        );
+      allow update: if false;
+    }
+
     match /usuarios/{userId}/inscricoes/{eventoId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
