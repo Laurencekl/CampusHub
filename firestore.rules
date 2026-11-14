@@ -29,7 +29,7 @@ service cloud.firestore {
       return resource.data.organizadorId == request.auth.uid
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'titulo', 'descricao', 'data', 'horario', 'local',
-          'endereco', 'categoria', 'limiteVagas'
+          'endereco', 'imagemUrl', 'categoria', 'limiteVagas'
         ])
         && request.resource.data.limiteVagas is int
         && request.resource.data.limiteVagas >= resource.data.inscritos;

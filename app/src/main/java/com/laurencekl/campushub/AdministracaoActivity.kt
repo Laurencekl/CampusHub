@@ -27,6 +27,7 @@ class AdministracaoActivity : AppCompatActivity() {
     private lateinit var campoHorario: EditText
     private lateinit var campoLocal: EditText
     private lateinit var campoEndereco: EditText
+    private lateinit var campoImagemUrl: EditText
     private lateinit var campoVagas: EditText
     private lateinit var campoCategoria: Spinner
     private lateinit var campoPublicar: CheckBox
@@ -50,6 +51,7 @@ class AdministracaoActivity : AppCompatActivity() {
         campoHorario = findViewById(R.id.campoHorarioEvento)
         campoLocal = findViewById(R.id.campoLocalEvento)
         campoEndereco = findViewById(R.id.campoEnderecoEvento)
+        campoImagemUrl = findViewById(R.id.campoImagemEvento)
         campoVagas = findViewById(R.id.campoVagasEvento)
         campoCategoria = findViewById(R.id.campoCategoriaEvento)
         campoPublicar = findViewById(R.id.campoPublicarEvento)
@@ -103,6 +105,7 @@ class AdministracaoActivity : AppCompatActivity() {
         val horario = campoHorario.text.toString().trim()
         val local = campoLocal.text.toString().trim()
         val endereco = campoEndereco.text.toString().trim()
+        val imagemUrl = campoImagemUrl.text.toString().trim()
         val vagas = campoVagas.text.toString().toLongOrNull()
         val usuario = FirebaseAuth.getInstance().currentUser ?: return
 
@@ -117,6 +120,7 @@ class AdministracaoActivity : AppCompatActivity() {
             "horario" to horario,
             "local" to local,
             "endereco" to endereco,
+            "imagemUrl" to imagemUrl,
             "categoria" to campoCategoria.selectedItem.toString(),
             "limiteVagas" to vagas!!
         )
@@ -158,6 +162,7 @@ class AdministracaoActivity : AppCompatActivity() {
                 campoHorario.setText(documento.getString("horario"))
                 campoLocal.setText(documento.getString("local"))
                 campoEndereco.setText(documento.getString("endereco"))
+                campoImagemUrl.setText(documento.getString("imagemUrl"))
                 campoVagas.setText(documento.getLong("limiteVagas")?.toString())
                 inscritosEventoEmEdicao = documento.getLong("inscritos") ?: 0L
 
@@ -381,6 +386,7 @@ class AdministracaoActivity : AppCompatActivity() {
         campoHorario.text.clear()
         campoLocal.text.clear()
         campoEndereco.text.clear()
+        campoImagemUrl.text.clear()
         campoVagas.text.clear()
         campoCategoria.setSelection(0)
         campoPublicar.isChecked = false

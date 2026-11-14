@@ -15,6 +15,7 @@ data class Evento(
     val limiteVagas: Long = 30,
     val inscritos: Long = 0,
     val endereco: String = "",
+    val imagemUrl: String = "",
     val status: String = "publicado"
 ) {
     fun vagasDisponiveis(): Long {

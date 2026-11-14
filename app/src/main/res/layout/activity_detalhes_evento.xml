@@ -61,6 +61,22 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cartaoImagemEvento"
+            android:layout_width="match_parent"
+            android:layout_height="190dp"
+            android:layout_marginTop="18dp"
+            android:visibility="gone"
+            app:cardCornerRadius="14dp">
+
+            <ImageView
+                android:id="@+id/imagemEventoDetalhes"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/imagem_evento"
+                android:scaleType="centerCrop" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"

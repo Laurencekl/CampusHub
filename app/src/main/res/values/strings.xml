@@ -62,6 +62,9 @@
     <string name="horario_evento_exemplo">Horário (HH:mm)</string>
     <string name="categoria_evento">Categoria</string>
     <string name="limite_vagas">Limite de vagas</string>
+    <string name="imagem_evento">Imagem do evento</string>
+    <string name="imagem_evento_url">URL da imagem (opcional)</string>
+    <string name="imagem_evento_url_ajuda">Cole um endereço https:// de uma imagem.</string>
     <string name="cadastrar_evento">Cadastrar evento</string>
     <string name="publicar_evento_agora">Publicar evento agora</string>
     <string name="evento_cadastrado">Evento cadastrado com sucesso!</string>

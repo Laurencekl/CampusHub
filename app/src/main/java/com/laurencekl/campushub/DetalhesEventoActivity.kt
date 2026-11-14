@@ -7,11 +7,13 @@ import android.os.Bundle
 import android.provider.CalendarContract
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -46,6 +48,8 @@ class DetalhesEventoActivity : AppCompatActivity() {
         val botaoFavoritar = findViewById<Button>(R.id.botaoFavoritar)
         val textoVagas = findViewById<TextView>(R.id.textoVagasDetalhes)
         val textoEndereco = findViewById<TextView>(R.id.textoEnderecoDetalhes)
+        val imagemEvento = findViewById<ImageView>(R.id.imagemEventoDetalhes)
+        val cartaoImagemEvento = findViewById<View>(R.id.cartaoImagemEvento)
         val botaoVerMapa = findViewById<Button>(R.id.botaoVerMapa)
         var enderecoEvento = ""
         botaoVerMapa.setOnClickListener {
@@ -325,6 +329,11 @@ class DetalhesEventoActivity : AppCompatActivity() {
                 textoEndereco.text = enderecoEvento.takeIf { it.isNotBlank() }
                     ?: getString(R.string.endereco_nao_informado)
                 botaoVerMapa.isEnabled = enderecoEvento.isNotBlank()
+                val imagemUrl = documento.getString("imagemUrl").orEmpty().trim()
+                cartaoImagemEvento.visibility = if (imagemUrl.isBlank()) View.GONE else View.VISIBLE
+                if (imagemUrl.isNotBlank()) {
+                    Glide.with(this).load(imagemUrl).centerCrop().into(imagemEvento)
+                }
                 limiteVagas = documento.getLong("limiteVagas") ?: 30
                 quantidadeInscritos = documento.getLong("inscritos") ?: 0
                 filaEspera = (documento.get("filaEspera") as? List<*>)
