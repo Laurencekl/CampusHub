@@ -177,7 +177,10 @@ service cloud.firestore {
         && !existsAfter(
           /databases/$(database)/documents/usuarios/$(usuarioId)/inscricoes/$(eventoId)
         );
-      allow update: if false;
+      allow update: if ownsEvent(eventoId)
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['checkIn', 'checkInEm'])
+        && request.resource.data.checkIn == true;
     }
 
     match /usuarios/{userId}/inscricoes/{eventoId} {

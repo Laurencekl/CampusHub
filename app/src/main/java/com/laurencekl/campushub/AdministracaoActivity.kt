@@ -10,8 +10,10 @@ import android.widget.ProgressBar
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import java.text.SimpleDateFormat
@@ -34,6 +36,7 @@ class AdministracaoActivity : AppCompatActivity() {
     private lateinit var botaoCadastrar: Button
     private lateinit var progresso: ProgressBar
     private val eventosOrganizador = mutableListOf<Pair<String, String>>()
+    private val participantesAcompanhamento = mutableListOf<Triple<String, String, Boolean>>()
     private var eventoEmEdicao: String? = null
     private var inscritosEventoEmEdicao = 0L
 
@@ -82,6 +85,10 @@ class AdministracaoActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.botaoAcompanharEvento).setOnClickListener {
             carregarAcompanhamento()
+        }
+
+        findViewById<Button>(R.id.botaoRegistrarCheckIn).setOnClickListener {
+            registrarCheckIn()
         }
 
         findViewById<Button>(R.id.botaoVoltarAdministracao).setOnClickListener {
@@ -190,10 +197,17 @@ class AdministracaoActivity : AppCompatActivity() {
                     checkIns
                 )
 
+                participantesAcompanhamento.clear()
                 val participantes = registros.map { registro ->
                     val nome = registro.getString("alunoNome").orEmpty()
                     val email = registro.getString("alunoEmail").orEmpty()
-                    getString(R.string.participante_acompanhamento, nome.ifBlank { email }, email)
+                    val checkIn = registro.getBoolean("checkIn") ?: false
+                    val identificacao = nome.ifBlank { email.ifBlank { registro.id } }
+                    participantesAcompanhamento.add(Triple(registro.id, identificacao, checkIn))
+                    val situacao = getString(
+                        if (checkIn) R.string.checkin_realizado else R.string.checkin_pendente
+                    )
+                    getString(R.string.participante_acompanhamento, identificacao, email, situacao)
                 }.ifEmpty { listOf(getString(R.string.nenhum_participante)) }
 
                 seletorParticipantes.adapter = ArrayAdapter(
@@ -207,6 +221,40 @@ class AdministracaoActivity : AppCompatActivity() {
         }.addOnFailureListener {
             textoAcompanhamento.setText(R.string.erro_acompanhamento)
         }
+    }
+
+    private fun registrarCheckIn() {
+        val evento = eventosOrganizador.getOrNull(seletorEventos.selectedItemPosition) ?: return
+        val participante = participantesAcompanhamento
+            .getOrNull(seletorParticipantes.selectedItemPosition) ?: return
+
+        if (participante.third) {
+            Toast.makeText(this, R.string.checkin_ja_registrado, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.confirmar_checkin)
+            .setMessage(getString(R.string.confirmar_checkin_mensagem, participante.second))
+            .setPositiveButton(R.string.confirmar) { _, _ ->
+                FirebaseFirestore.getInstance().collection("eventos").document(evento.first)
+                    .collection("inscritos").document(participante.first)
+                    .update(
+                        mapOf(
+                            "checkIn" to true,
+                            "checkInEm" to FieldValue.serverTimestamp()
+                        )
+                    )
+                    .addOnSuccessListener {
+                        Toast.makeText(this, R.string.checkin_registrado, Toast.LENGTH_SHORT).show()
+                        carregarAcompanhamento()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, R.string.erro_checkin, Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .setNegativeButton(R.string.cancelar, null)
+            .show()
     }
 
     private fun carregarEventosDoOrganizador() {
