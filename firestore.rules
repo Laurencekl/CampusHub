@@ -180,7 +180,9 @@ service cloud.firestore {
       allow update: if ownsEvent(eventoId)
         && request.resource.data.diff(resource.data).affectedKeys()
           .hasOnly(['checkIn', 'checkInEm'])
-        && request.resource.data.checkIn == true;
+        && resource.data.get('checkIn', false) == false
+        && request.resource.data.checkIn == true
+        && request.resource.data.checkInEm == request.time;
     }
 
     match /usuarios/{userId}/inscricoes/{eventoId} {

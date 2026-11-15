@@ -15,7 +15,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.SetOptions
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -40,6 +43,9 @@ class AdministracaoActivity : AppCompatActivity() {
     private val participantesAcompanhamento = mutableListOf<Triple<String, String, Boolean>>()
     private var eventoEmEdicao: String? = null
     private var inscritosEventoEmEdicao = 0L
+    private val leitorQr = registerForActivityResult(ScanContract()) { resultado ->
+        resultado.contents?.let(::registrarCheckInPorQr)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,6 +97,19 @@ class AdministracaoActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.botaoRegistrarCheckIn).setOnClickListener {
             registrarCheckIn()
+        }
+
+        findViewById<Button>(R.id.botaoLerQrCheckIn).setOnClickListener {
+            if (eventosOrganizador.getOrNull(seletorEventos.selectedItemPosition) == null) {
+                Toast.makeText(this, R.string.selecione_evento_qr, Toast.LENGTH_SHORT).show()
+            } else {
+                val opcoes = ScanOptions()
+                opcoes.setDesiredBarcodeFormats("QR_CODE")
+                opcoes.setPrompt(getString(R.string.aponte_camera_qr))
+                opcoes.setBeepEnabled(false)
+                opcoes.setOrientationLocked(false)
+                leitorQr.launch(opcoes)
+            }
         }
 
         findViewById<Button>(R.id.botaoVoltarAdministracao).setOnClickListener {
@@ -260,6 +279,59 @@ class AdministracaoActivity : AppCompatActivity() {
             }
             .setNegativeButton(R.string.cancelar, null)
             .show()
+    }
+
+    private fun registrarCheckInPorQr(conteudo: String) {
+        val dados = CheckInQr.ler(conteudo)
+        val evento = eventosOrganizador.getOrNull(seletorEventos.selectedItemPosition)
+
+        if (dados == null) {
+            Toast.makeText(this, R.string.qr_invalido, Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (evento == null || dados.eventoId != evento.first) {
+            Toast.makeText(this, R.string.qr_outro_evento, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val participante = FirebaseFirestore.getInstance().collection("eventos")
+            .document(dados.eventoId).collection("inscritos").document(dados.alunoId)
+
+        FirebaseFirestore.getInstance().runTransaction { transacao ->
+            val registro = transacao.get(participante)
+            if (!registro.exists()) {
+                throw FirebaseFirestoreException(
+                    "QR_NAO_INSCRITO",
+                    FirebaseFirestoreException.Code.ABORTED
+                )
+            }
+            if (registro.getBoolean("checkIn") == true) {
+                throw FirebaseFirestoreException(
+                    "QR_JA_UTILIZADO",
+                    FirebaseFirestoreException.Code.ABORTED
+                )
+            }
+
+            transacao.update(
+                participante,
+                mapOf(
+                    "checkIn" to true,
+                    "checkInEm" to FieldValue.serverTimestamp()
+                )
+            )
+        }.addOnSuccessListener {
+            Toast.makeText(this, R.string.checkin_qr_registrado, Toast.LENGTH_SHORT).show()
+            carregarAcompanhamento()
+        }.addOnFailureListener { erro ->
+            val mensagem = when {
+                erro.message?.contains("QR_NAO_INSCRITO") == true ->
+                    R.string.qr_aluno_nao_inscrito
+                erro.message?.contains("QR_JA_UTILIZADO") == true ->
+                    R.string.qr_ja_utilizado
+                else -> R.string.erro_checkin
+            }
+            Toast.makeText(this, mensagem, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun carregarEventosDoOrganizador() {

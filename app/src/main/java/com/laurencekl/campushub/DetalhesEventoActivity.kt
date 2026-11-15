@@ -14,10 +14,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.google.zxing.BarcodeFormat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.journeyapps.barcodescanner.BarcodeEncoder
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -45,6 +47,7 @@ class DetalhesEventoActivity : AppCompatActivity() {
         var quantidadeInscritos = intent.getLongExtra("inscritos", 0)
         val botaoInscrever = findViewById<Button>(R.id.botaoInscrever)
         val botaoListaEspera = findViewById<Button>(R.id.botaoListaEspera)
+        val botaoMostrarQr = findViewById<Button>(R.id.botaoMostrarQrCheckIn)
         val botaoFavoritar = findViewById<Button>(R.id.botaoFavoritar)
         val textoVagas = findViewById<TextView>(R.id.textoVagasDetalhes)
         val textoEndereco = findViewById<TextView>(R.id.textoEnderecoDetalhes)
@@ -227,6 +230,7 @@ class DetalhesEventoActivity : AppCompatActivity() {
             } else {
                 getString(R.string.entrar_lista_espera)
             }
+            botaoMostrarQr.visibility = if (inscrito) View.VISIBLE else View.GONE
 
             when {
                 inscrito -> {
@@ -263,6 +267,10 @@ class DetalhesEventoActivity : AppCompatActivity() {
         atualizarVagas()
         atualizarBotao()
         carregarMediaAvaliacoes()
+
+        botaoMostrarQr.setOnClickListener {
+            if (usuario != null) mostrarQrCheckIn(eventoId, usuario.uid)
+        }
 
         if (referenciaFavorito != null) {
             botaoFavoritar.isEnabled = false
@@ -449,6 +457,7 @@ class DetalhesEventoActivity : AppCompatActivity() {
                         "alunoId" to usuario.uid,
                         "alunoNome" to (usuario.displayName ?: usuario.email.orEmpty()),
                         "alunoEmail" to usuario.email.orEmpty(),
+                        "checkIn" to false,
                         "limiteVagas" to limiteAtual,
                         "inscritos" to novaQuantidade,
                         "inscritoEm" to FieldValue.serverTimestamp()
@@ -789,6 +798,34 @@ class DetalhesEventoActivity : AppCompatActivity() {
             } catch (_: ActivityNotFoundException) {
                 Toast.makeText(this, R.string.erro_abrir_mapa, Toast.LENGTH_LONG).show()
             }
+        }
+    }
+
+    private fun mostrarQrCheckIn(eventoId: String, alunoId: String) {
+        try {
+            val tamanho = (resources.displayMetrics.widthPixels * 0.7).toInt()
+            val imagemQr = ImageView(this).apply {
+                val margem = (16 * resources.displayMetrics.density).toInt()
+                setPadding(margem, margem, margem, margem)
+                setImageBitmap(
+                    BarcodeEncoder().encodeBitmap(
+                        CheckInQr.criar(eventoId, alunoId),
+                        BarcodeFormat.QR_CODE,
+                        tamanho,
+                        tamanho
+                    )
+                )
+                contentDescription = getString(R.string.qr_checkin_descricao)
+            }
+
+            AlertDialog.Builder(this)
+                .setTitle(R.string.qr_checkin_titulo)
+                .setMessage(R.string.qr_checkin_instrucao)
+                .setView(imagemQr)
+                .setPositiveButton(R.string.fechar, null)
+                .show()
+        } catch (_: Exception) {
+            Toast.makeText(this, R.string.erro_gerar_qr, Toast.LENGTH_SHORT).show()
         }
     }
 }
