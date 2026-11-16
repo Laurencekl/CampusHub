@@ -1,39 +1,55 @@
 # CampusHub
 
-Aplicativo Android para alunos encontrarem eventos da universidade, organizarem seus favoritos, compartilharem experiências e acompanharem suas inscrições.
+Aplicativo Android para alunos encontrarem eventos universitários, realizarem inscrições e compartilharem suas experiências. O sistema também oferece uma área para organizadores criarem e acompanharem seus próprios eventos.
 
-## Funcionalidades
+## Funcionalidades dos alunos
 
-- Criação de conta, login e logout.
-- Recuperação de senha por e-mail.
-- Visualização e edição do perfil do usuário.
-- Listagem e detalhes dos eventos.
-- Pesquisa de eventos pelo título.
+- Criação de conta, login, logout e recuperação de senha.
+- Visualização e edição do perfil.
+- Listagem, pesquisa e detalhes dos eventos.
 - Filtros por categoria e situação: próximos ou encerrados.
-- Identificação da situação em cada cartão de evento.
-- Controle de vagas disponíveis e bloqueio de inscrições em eventos lotados.
-- Inscrição e cancelamento de inscrição.
-- Tela **Meus eventos** com as inscrições do aluno.
-- Favoritar e desfavoritar eventos.
-- Tela **Meus favoritos**.
-- Comentários com nome do autor e data de publicação.
-- Edição e exclusão dos próprios comentários.
-- Avaliação de eventos encerrados com notas de 1 a 5.
-- Exibição da média das avaliações.
-- Compartilhamento das informações do evento.
-- Adição do evento ao calendário do celular.
+- Inscrição, cancelamento e consulta da tela **Meus eventos**.
+- Controle de vagas e entrada na lista de espera quando o evento estiver lotado.
+- Confirmação da inscrição pelo primeiro aluno da lista quando surgir uma vaga.
+- Favoritos e tela **Meus favoritos**.
+- Comentários com autor e data, permitindo editar ou excluir apenas os próprios comentários.
+- Avaliação de eventos encerrados com nota de 1 a 5 e exibição da média.
+- Exibição do evento no mapa, compartilhamento e adição ao calendário.
+- Publicação local de fotos, áudios e vídeos relacionados ao evento.
+- QR Code individual para o check-in de cada inscrição confirmada.
+
+## Funcionalidades dos organizadores
+
+- Criação de eventos como rascunho ou já publicados.
+- Edição dos próprios eventos.
+- Publicação e encerramento dos eventos sob sua responsabilidade.
+- Cadastro de título, descrição, categoria, data, horário, local, endereço, capacidade e imagem por URL.
+- Acompanhamento das vagas ocupadas, lista de espera, participantes e check-ins.
+- Check-in manual ou por leitura do QR Code do aluno.
+- Bloqueio de uma segunda validação do mesmo QR Code.
 
 ## Tecnologias
 
-- Kotlin.
-- XML, AndroidX e Material Components.
-- Firebase Authentication.
-- Cloud Firestore.
+- Kotlin e layouts XML.
+- AndroidX e Material Components.
+- Firebase Authentication e Cloud Firestore.
+- Glide para carregar imagens dos eventos.
+- ZXing para gerar e ler QR Codes.
+- JUnit, AndroidX Test, Espresso e UI Automator.
+- JaCoCo para o relatório de cobertura.
 - Gradle Kotlin DSL.
 
 ## Organização dos dados
 
-Os eventos são armazenados na coleção `eventos` do Cloud Firestore. Cada usuário possui suas próprias inscrições e seus favoritos. Os comentários e as avaliações ficam associados ao evento correspondente.
+- `usuarios`: perfil e dados básicos de cada conta.
+- `eventos`: informações, organizador, situação, vagas e lista de espera.
+- `eventos/{eventoId}/inscritos`: participantes e situação do check-in.
+- `eventos/{eventoId}/comentarios`: comentários publicados.
+- `eventos/{eventoId}/avaliacoes`: avaliações dos alunos inscritos.
+- `usuarios/{uid}/inscricoes`: eventos em que o aluno está inscrito.
+- `usuarios/{uid}/favoritos`: eventos favoritos do aluno.
+
+As fotos, os áudios e os vídeos publicados ficam armazenados apenas no aparelho utilizado. Os demais dados são sincronizados pelo Firestore.
 
 ## Como executar
 
@@ -45,6 +61,26 @@ Os eventos são armazenados na coleção `eventos` do Cloud Firestore. Cada usu�
 6. Sincronize o projeto com o Gradle.
 7. Execute em um emulador ou aparelho Android.
 
+Toda conta nova recebe o perfil `aluno`. Para testar a administração, altere no documento `usuarios/{uid}` do Firestore o campo `perfil` para `organizador`.
+
+## Testes automatizados
+
+Execute os testes unitários e verifique a cobertura:
+
+```powershell
+.\gradlew.bat testDebugUnitTest relatorioCobertura verificarCobertura
+```
+
+Com um emulador ou aparelho conectado, execute os testes de integração com os emuladores do Firebase:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\executar-testes-integracao.ps1
+```
+
+Os relatórios ficam dentro de `app/build/reports`.
+
 ## Formato dos eventos
 
-Cada documento da coleção `eventos` utiliza os campos `titulo`, `descricao`, `data`, `horario`, `local`, `categoria`, `limiteVagas` e `inscritos`. A data deve seguir o formato `dd/MM/yyyy` e o horário o formato `HH:mm`.
+Os documentos da coleção `eventos` utilizam campos como `titulo`, `descricao`, `data`, `horario`, `local`, `endereco`, `categoria`, `imagemUrl`, `limiteVagas`, `inscritos`, `filaEspera`, `organizadorId` e `status`.
+
+A data segue o formato `dd/MM/yyyy`, o horário utiliza `HH:mm` e a situação do evento pode ser `rascunho`, `publicado` ou `encerrado`.
