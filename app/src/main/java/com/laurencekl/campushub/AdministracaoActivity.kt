@@ -1,5 +1,7 @@
 package com.laurencekl.campushub
 
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
@@ -109,6 +111,21 @@ class AdministracaoActivity : AppCompatActivity() {
                 opcoes.setBeepEnabled(false)
                 opcoes.setOrientationLocked(false)
                 leitorQr.launch(opcoes)
+            }
+        }
+
+        findViewById<Button>(R.id.botaoColarQrCheckIn).setOnClickListener {
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val conteudo = clipboard.primaryClip
+                ?.getItemAt(0)
+                ?.coerceToText(this)
+                ?.toString()
+                ?.trim()
+
+            if (conteudo.isNullOrBlank()) {
+                Toast.makeText(this, R.string.nenhum_codigo_qr_copiado, Toast.LENGTH_SHORT).show()
+            } else {
+                registrarCheckInPorQr(conteudo)
             }
         }
 

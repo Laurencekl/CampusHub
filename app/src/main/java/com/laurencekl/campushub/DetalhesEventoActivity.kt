@@ -1,6 +1,9 @@
 package com.laurencekl.campushub
 
 import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -803,13 +806,14 @@ class DetalhesEventoActivity : AppCompatActivity() {
 
     private fun mostrarQrCheckIn(eventoId: String, alunoId: String) {
         try {
+            val conteudoQr = CheckInQr.criar(eventoId, alunoId)
             val tamanho = (resources.displayMetrics.widthPixels * 0.7).toInt()
             val imagemQr = ImageView(this).apply {
                 val margem = (16 * resources.displayMetrics.density).toInt()
                 setPadding(margem, margem, margem, margem)
                 setImageBitmap(
                     BarcodeEncoder().encodeBitmap(
-                        CheckInQr.criar(eventoId, alunoId),
+                        conteudoQr,
                         BarcodeFormat.QR_CODE,
                         tamanho,
                         tamanho
@@ -822,6 +826,12 @@ class DetalhesEventoActivity : AppCompatActivity() {
                 .setTitle(R.string.qr_checkin_titulo)
                 .setMessage(R.string.qr_checkin_instrucao)
                 .setView(imagemQr)
+                .setNeutralButton(R.string.copiar_codigo_qr) { _, _ ->
+                    val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val rotulo = getString(R.string.qr_checkin_titulo)
+                    clipboard.setPrimaryClip(ClipData.newPlainText(rotulo, conteudoQr))
+                    Toast.makeText(this, R.string.codigo_qr_copiado, Toast.LENGTH_SHORT).show()
+                }
                 .setPositiveButton(R.string.fechar, null)
                 .show()
         } catch (_: Exception) {

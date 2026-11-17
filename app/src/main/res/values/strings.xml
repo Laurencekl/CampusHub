@@ -71,6 +71,10 @@
     <string name="qr_aluno_nao_inscrito">O aluno não está inscrito neste evento.</string>
     <string name="qr_ja_utilizado">Este QR Code já foi utilizado.</string>
     <string name="checkin_qr_registrado">QR Code validado e check-in registrado.</string>
+    <string name="copiar_codigo_qr">Copiar código</string>
+    <string name="codigo_qr_copiado">Código do QR copiado.</string>
+    <string name="colar_codigo_qr">Colar código do QR</string>
+    <string name="nenhum_codigo_qr_copiado">Nenhum código do QR foi copiado.</string>
     <string name="titulo_evento">Título</string>
     <string name="data_evento_exemplo">Data (dd/MM/aaaa)</string>
     <string name="horario_evento_exemplo">Horário (HH:mm)</string>
