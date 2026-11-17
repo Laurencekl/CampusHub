@@ -12,7 +12,6 @@ import android.widget.SimpleAdapter
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -60,44 +59,18 @@ class EventosActivity : AppCompatActivity() {
             this,
             dadosDaLista,
             R.layout.item_evento,
-            arrayOf("titulo", "situacao", "informacoes", "descricao"),
+            arrayOf("imagem", "titulo", "situacao", "informacoes", "local", "vagas", "descricao"),
             intArrayOf(
+                R.id.imagemEventoLista,
                 R.id.textoTituloEvento,
                 R.id.textoSituacaoEvento,
                 R.id.textoInformacoesEvento,
+                R.id.textoLocalEvento,
+                R.id.textoVagasEvento,
                 R.id.textoDescricaoEvento
             )
         )
-
-        adaptador.viewBinder = SimpleAdapter.ViewBinder { view, valor, _ ->
-            if (view.id == R.id.textoSituacaoEvento) {
-                val textoSituacao = valor.toString()
-                val texto = view as TextView
-                val eventoEncerrado = textoSituacao == getString(R.string.evento_encerrado)
-
-                texto.text = textoSituacao
-                texto.setBackgroundResource(
-                    if (eventoEncerrado) {
-                        R.drawable.fundo_status_encerrado
-                    } else {
-                        R.drawable.fundo_status_proximo
-                    }
-                )
-                texto.setTextColor(
-                    ContextCompat.getColor(
-                        this,
-                        if (eventoEncerrado) {
-                            R.color.texto_status_encerrado
-                        } else {
-                            R.color.azul_escuro
-                        }
-                    )
-                )
-                true
-            } else {
-                false
-            }
-        }
+        adaptador.configurarCartaoEvento(this)
         listaEventos.adapter = adaptador
 
         fun mostrarEventos(eventos: List<Evento>) {
@@ -108,13 +81,24 @@ class EventosActivity : AppCompatActivity() {
             eventos.forEach { evento ->
                 dadosDaLista.add(
                     hashMapOf(
+                        "imagem" to evento.imagemUrl,
                         "titulo" to evento.titulo,
                         "situacao" to if (evento.estaEncerrado()) {
                             getString(R.string.evento_encerrado)
                         } else {
                             getString(R.string.evento_proximo)
                         },
-                        "informacoes" to "${evento.categoria} • ${evento.data} às ${evento.horario} • ${evento.local}",
+                        "informacoes" to "${evento.categoria} • ${evento.data} às ${evento.horario}",
+                        "local" to evento.local,
+                        "vagas" to if (evento.vagasDisponiveis() == 0L) {
+                            getString(R.string.evento_lotado)
+                        } else {
+                            getString(
+                                R.string.vagas_disponiveis,
+                                evento.vagasDisponiveis(),
+                                evento.limiteVagas
+                            )
+                        },
                         "descricao" to evento.descricao
                     )
                 )

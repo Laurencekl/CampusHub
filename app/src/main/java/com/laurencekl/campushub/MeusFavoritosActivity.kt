@@ -30,13 +30,18 @@ class MeusFavoritosActivity : AppCompatActivity() {
             this,
             dadosDaLista,
             R.layout.item_evento,
-            arrayOf("titulo", "informacoes", "descricao"),
+            arrayOf("imagem", "titulo", "situacao", "informacoes", "local", "vagas", "descricao"),
             intArrayOf(
+                R.id.imagemEventoLista,
                 R.id.textoTituloEvento,
+                R.id.textoSituacaoEvento,
                 R.id.textoInformacoesEvento,
+                R.id.textoLocalEvento,
+                R.id.textoVagasEvento,
                 R.id.textoDescricaoEvento
             )
         )
+        adaptador.configurarCartaoEvento(this)
         listaFavoritos.adapter = adaptador
 
         listaFavoritos.setOnItemClickListener { _, _, position, _ ->
@@ -105,8 +110,24 @@ class MeusFavoritosActivity : AppCompatActivity() {
                 favoritos.forEach { evento ->
                     dadosDaLista.add(
                         hashMapOf(
+                            "imagem" to evento.imagemUrl,
                             "titulo" to evento.titulo,
-                            "informacoes" to "${evento.categoria} • ${evento.data} às ${evento.horario} • ${evento.local}",
+                            "situacao" to if (evento.estaEncerrado()) {
+                                getString(R.string.evento_encerrado)
+                            } else {
+                                getString(R.string.evento_proximo)
+                            },
+                            "informacoes" to "${evento.categoria} • ${evento.data} às ${evento.horario}",
+                            "local" to evento.local,
+                            "vagas" to if (evento.vagasDisponiveis() == 0L) {
+                                getString(R.string.evento_lotado)
+                            } else {
+                                getString(
+                                    R.string.vagas_disponiveis,
+                                    evento.vagasDisponiveis(),
+                                    evento.limiteVagas
+                                )
+                            },
                             "descricao" to evento.descricao
                         )
                     )
