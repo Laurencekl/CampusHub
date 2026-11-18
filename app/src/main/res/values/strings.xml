@@ -30,9 +30,13 @@
     <string name="carregando_quantidade">...</string>
     <string name="quantidade_indisponivel">-</string>
     <string name="administracao">Administração</string>
-    <string name="administracao_titulo">Cadastrar evento</string>
-    <string name="administracao_subtitulo">Adicione uma nova atividade ao CampusHub.</string>
+    <string name="administracao_titulo">Área do organizador</string>
+    <string name="administracao_subtitulo">Gerencie seus eventos, participantes e check-ins.</string>
     <string name="seus_eventos_organizador">Seus eventos</string>
+    <string name="participantes_checkin">Participantes e check-in</string>
+    <string name="criar_editar_evento">Criar ou editar evento</string>
+    <string name="editar_evento">Editar evento</string>
+    <string name="alterar_situacao_evento">Alterar situação</string>
     <string name="nenhum_evento_organizador">Você ainda não criou eventos.</string>
     <string name="erro_eventos_organizador">Não foi possível carregar seus eventos.</string>
     <string name="evento_organizador_item">• %1$s — %2$s</string>
