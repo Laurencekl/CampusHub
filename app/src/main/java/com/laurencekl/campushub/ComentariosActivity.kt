@@ -1,6 +1,7 @@
 package com.laurencekl.campushub
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
@@ -59,6 +60,7 @@ class ComentariosActivity : AppCompatActivity() {
         .collection("comentarios")
 
     private fun carregarComentarios() {
+        textoStatus.visibility = View.VISIBLE
         textoStatus.text = getString(R.string.carregando_comentarios)
 
         referenciaComentarios()
@@ -72,14 +74,12 @@ class ComentariosActivity : AppCompatActivity() {
                     }
                 )
 
-                textoStatus.text = if (comentarios.isEmpty()) {
-                    getString(R.string.nenhum_comentario)
-                } else {
-                    ""
-                }
+                textoStatus.visibility = if (comentarios.isEmpty()) View.VISIBLE else View.GONE
+                textoStatus.text = getString(R.string.nenhum_comentario)
                 adaptador.notifyDataSetChanged()
             }
             .addOnFailureListener {
+                textoStatus.visibility = View.VISIBLE
                 textoStatus.text = getString(R.string.erro_comentarios)
             }
     }

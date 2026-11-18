@@ -164,6 +164,7 @@
     <string name="ver_comentarios">Comentários</string>
     <string name="comentarios_titulo">Comentários</string>
     <string name="comentarios_subtitulo">Compartilhe sua experiência sobre este evento.</string>
+    <string name="novo_comentario">Novo comentário</string>
     <string name="digite_comentario">Digite seu comentário</string>
     <string name="publicar_comentario">Publicar comentário</string>
     <string name="comentario_vazio">Digite um comentário antes de publicar.</string>
@@ -245,6 +246,8 @@
     <string name="ver_audios_evento">Áudios do evento</string>
     <string name="audios_evento_titulo">Áudios do evento</string>
     <string name="audios_evento_descricao">Toque para ouvir. Segure seu áudio para excluir.</string>
+    <string name="compartilhar_audio">Compartilhe um áudio</string>
+    <string name="publicacoes_evento">Publicações</string>
     <string name="gravar_audio">Gravar áudio</string>
     <string name="item_audio">%1$s\n%2$s — toque para reproduzir</string>
     <string name="nenhum_audio_evento">Ainda não há áudios neste evento.</string>
@@ -260,6 +263,8 @@
     <string name="audio_excluido">Áudio excluído.</string>
     <string name="ver_videos_evento">Vídeos do evento</string>
     <string name="videos_evento_titulo">Vídeos do evento</string>
+    <string name="videos_evento_descricao">Grave um vídeo curto ou escolha um arquivo da galeria.</string>
+    <string name="compartilhar_video">Compartilhe um vídeo</string>
     <string name="gravar_video">Gravar vídeo</string>
     <string name="escolher_video">Galeria</string>
     <string name="item_video">%1$s\n%2$s — toque para assistir; segure para excluir</string>
