@@ -23,6 +23,8 @@
     <string name="inicio_subtitulo">Bem-vindo ao CampusHub</string>
     <string name="inicio_mensagem">Aqui você encontrará os próximos eventos da universidade.</string>
     <string name="resumo_titulo">Seu resumo</string>
+    <string name="acesso_rapido">Acesso rápido</string>
+    <string name="gerenciar_eventos">Gerenciar</string>
     <string name="resumo_inscricoes">Inscrições</string>
     <string name="resumo_favoritos">Favoritos</string>
     <string name="carregando_quantidade">...</string>
