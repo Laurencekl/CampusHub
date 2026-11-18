@@ -10,41 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/perfil_titulo"
-            android:textColor="@color/texto_principal"
-            android:textSize="28sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/perfil_subtitulo"
-            android:textColor="@color/texto_secundario"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/textoInicialPerfil"
-            android:layout_width="88dp"
-            android:layout_height="88dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="32dp"
-            android:background="@drawable/fundo_avatar"
-            android:gravity="center"
-            android:textColor="@color/branco"
-            android:textSize="36sp"
-            android:textStyle="bold" />
+        android:padding="16dp">
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            app:cardCornerRadius="16dp"
+            app:cardBackgroundColor="@color/azul_principal"
+            app:cardCornerRadius="20dp"
             app:cardElevation="2dp">
 
             <LinearLayout
@@ -56,41 +28,97 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/perfil_nome"
-                    android:textColor="@color/texto_secundario"
-                    android:textSize="14sp" />
+                    android:text="@string/perfil_titulo"
+                    android:textColor="@color/branco"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/perfil_subtitulo"
+                    android:textColor="@color/azul_cabecalho_claro"
+                    android:textSize="15sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardBackgroundColor="@color/branco"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="1dp"
+            app:strokeColor="@color/azul_borda"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/textoInicialPerfil"
+                    android:layout_width="92dp"
+                    android:layout_height="92dp"
+                    android:background="@drawable/fundo_avatar"
+                    android:gravity="center"
+                    android:textColor="@color/branco"
+                    android:textSize="38sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/textoNomePerfil"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
                     android:textColor="@color/texto_principal"
-                    android:textSize="18sp"
+                    android:textSize="22sp"
                     android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textoEmailPerfil"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:textColor="@color/texto_secundario"
+                    android:textSize="15sp" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="20dp"
-                    android:layout_marginBottom="20dp"
-                    android:background="@color/fundo_claro" />
+                    android:layout_marginBottom="16dp"
+                    android:background="@color/azul_borda" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/perfil_email"
-                    android:textColor="@color/texto_secundario"
-                    android:textSize="14sp" />
+                    android:background="@drawable/fundo_status_proximo"
+                    android:orientation="vertical"
+                    android:padding="14dp">
 
-                <TextView
-                    android:id="@+id/textoEmailPerfil"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:textColor="@color/texto_principal"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/perfil_nome"
+                        android:textColor="@color/azul_escuro"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/perfil_nome_descricao"
+                        android:textColor="@color/texto_secundario"
+                        android:textSize="14sp" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -98,7 +126,7 @@
             android:id="@+id/botaoEditarPerfil"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:text="@string/editar_perfil"
             android:textSize="16sp"
             app:cornerRadius="12dp" />
@@ -108,7 +136,8 @@
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="12dp"
             android:text="@string/voltar"
             android:textSize="16sp"
             app:cornerRadius="12dp" />
