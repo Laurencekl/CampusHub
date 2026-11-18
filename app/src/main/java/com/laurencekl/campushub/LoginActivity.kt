@@ -90,6 +90,10 @@ class LoginActivity : AppCompatActivity() {
     private fun mostrarCarregamento(carregando: Boolean) {
         progressoLogin.visibility = if (carregando) View.VISIBLE else View.GONE
         botaoEntrar.isEnabled = !carregando
+        editEmail.isEnabled = !carregando
+        editSenha.isEnabled = !carregando
+        botaoEsqueciSenha.isEnabled = !carregando
+        botaoIrParaCadastro.isEnabled = !carregando
     }
 
     private fun abrirTelaInicial() {

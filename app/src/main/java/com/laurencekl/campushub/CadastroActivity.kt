@@ -136,6 +136,11 @@ class CadastroActivity : AppCompatActivity() {
     private fun mostrarCarregamento(carregando: Boolean) {
         progressoCadastro.visibility = if (carregando) View.VISIBLE else View.GONE
         botaoCadastrar.isEnabled = !carregando
+        editNome.isEnabled = !carregando
+        editEmail.isEnabled = !carregando
+        editSenha.isEnabled = !carregando
+        editConfirmarSenha.isEnabled = !carregando
+        botaoIrParaLogin.isEnabled = !carregando
     }
 
     private fun abrirTelaInicial() {

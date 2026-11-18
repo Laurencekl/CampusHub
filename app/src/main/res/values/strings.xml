@@ -19,6 +19,10 @@
     <string name="nao_tem_conta">Ainda não tem uma conta? Cadastre-se</string>
     <string name="ja_tem_conta">Já tem uma conta? Entre aqui</string>
     <string name="erro_login">Não foi possível entrar</string>
+    <string name="autenticacao_chamada">Eventos, inscrições e experiências do seu campus em um só lugar.</string>
+    <string name="dados_da_conta">Dados da conta</string>
+    <string name="dados_da_conta_descricao">Use seus dados acadêmicos para criar um perfil simples.</string>
+    <string name="senha_ajuda">Use pelo menos 6 caracteres.</string>
     <string name="inicio_titulo">Olá, %1$s!</string>
     <string name="inicio_subtitulo">Bem-vindo ao CampusHub</string>
     <string name="inicio_mensagem">Aqui você encontrará os próximos eventos da universidade.</string>
@@ -105,6 +109,9 @@
     <string name="esqueci_senha">Esqueci minha senha</string>
     <string name="recuperar_titulo">Recuperar senha</string>
     <string name="recuperar_subtitulo">Informe seu e-mail para receber o link de redefinição.</string>
+    <string name="recuperar_instrucao_titulo">Receba um link por e-mail</string>
+    <string name="recuperar_instrucao_descricao">Enviaremos as instruções de redefinição para o endereço cadastrado.</string>
+    <string name="recuperar_email_ajuda">Use o mesmo e-mail informado no cadastro.</string>
     <string name="enviar_link">Enviar link</string>
     <string name="voltar_login">Voltar para o login</string>
     <string name="email_recuperacao_enviado">E-mail de recuperação enviado!</string>

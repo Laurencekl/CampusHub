@@ -9,74 +9,117 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="16dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/app_name"
-            android:textColor="@color/azul_principal"
-            android:textSize="32sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:text="@string/recuperar_titulo"
-            android:textColor="@color/texto_principal"
-            android:textSize="26sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="24dp"
-            android:text="@string/recuperar_subtitulo"
-            android:textColor="@color/texto_secundario"
-            android:textSize="16sp" />
-
-        <com.google.android.material.textfield.TextInputLayout
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/email"
-            app:boxBackgroundMode="outline">
+            app:cardBackgroundColor="@color/azul_principal"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="2dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editEmailRecuperacao"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:orientation="vertical"
+                android:padding="22dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/botaoEnviarLink"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="24dp"
-            android:text="@string/enviar_link"
-            android:textSize="16sp"
-            app:cornerRadius="12dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/recuperar_titulo"
+                    android:textColor="@color/branco"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/botaoVoltarLogin"
-            style="@style/Widget.Material3.Button.TextButton"
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/recuperar_subtitulo"
+                    android:textColor="@color/azul_cabecalho_claro"
+                    android:textSize="15sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/voltar_login" />
+            android:layout_marginTop="16dp"
+            app:cardBackgroundColor="@color/branco"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="1dp"
+            app:strokeColor="@color/azul_borda"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/recuperar_instrucao_titulo"
+                    android:textColor="@color/texto_principal"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="18dp"
+                    android:text="@string/recuperar_instrucao_descricao"
+                    android:textColor="@color/texto_secundario"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/email"
+                    app:boxBackgroundMode="outline"
+                    app:helperText="@string/recuperar_email_ajuda">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editEmailRecuperacao"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionDone"
+                        android:inputType="textEmailAddress"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/botaoEnviarLink"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/enviar_link"
+                    android:textSize="16sp"
+                    app:cornerRadius="12dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/botaoVoltarLogin"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/voltar_login"
+                    android:textSize="15sp"
+                    app:cornerRadius="12dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <ProgressBar
             android:id="@+id/progressoRecuperacao"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
             android:visibility="gone" />
     </LinearLayout>
 </ScrollView>

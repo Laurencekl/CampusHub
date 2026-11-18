@@ -68,5 +68,6 @@ class RecuperarSenhaActivity : AppCompatActivity() {
     private fun mostrarCarregamento(carregando: Boolean) {
         progressoRecuperacao.visibility = if (carregando) View.VISIBLE else View.GONE
         botaoEnviar.isEnabled = !carregando
+        editEmail.isEnabled = !carregando
     }
 }
