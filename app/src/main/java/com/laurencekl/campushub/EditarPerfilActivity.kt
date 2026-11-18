@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -26,7 +27,13 @@ class EditarPerfilActivity : AppCompatActivity() {
         botaoSalvar = findViewById(R.id.botaoSalvarPerfil)
         progressoEdicao = findViewById(R.id.progressoEdicaoPerfil)
 
-        editNome.setText(autenticacao.currentUser?.displayName.orEmpty())
+        val usuario = autenticacao.currentUser
+        val nomeAtual = usuario?.displayName.orEmpty()
+
+        editNome.setText(nomeAtual)
+        findViewById<TextView>(R.id.textoEmailEdicaoPerfil).text = usuario?.email.orEmpty()
+        findViewById<TextView>(R.id.textoInicialEdicaoPerfil).text =
+            nomeAtual.trim().firstOrNull()?.uppercase() ?: "?"
 
         botaoSalvar.setOnClickListener {
             salvarAlteracoes()
@@ -70,5 +77,6 @@ class EditarPerfilActivity : AppCompatActivity() {
     private fun mostrarCarregamento(carregando: Boolean) {
         progressoEdicao.visibility = if (carregando) View.VISIBLE else View.GONE
         botaoSalvar.isEnabled = !carregando
+        editNome.isEnabled = !carregando
     }
 }

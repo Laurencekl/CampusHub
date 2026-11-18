@@ -119,6 +119,7 @@
     <string name="editar_perfil">Editar perfil</string>
     <string name="editar_perfil_titulo">Editar perfil</string>
     <string name="editar_perfil_subtitulo">Altere o nome exibido na sua conta.</string>
+    <string name="editar_perfil_dados">Nome de exibição</string>
     <string name="salvar_alteracoes">Salvar alterações</string>
     <string name="perfil_atualizado">Perfil atualizado com sucesso!</string>
     <string name="erro_atualizar_perfil">Não foi possível atualizar o perfil</string>
