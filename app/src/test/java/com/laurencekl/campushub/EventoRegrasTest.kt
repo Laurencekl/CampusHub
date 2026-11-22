@@ -8,6 +8,37 @@ import org.junit.Test
 class EventoRegrasTest {
 
     @Test
+    fun mantemTodosOsDadosDoEvento() {
+        val evento = Evento(
+            id = "evento-1",
+            titulo = "Workshop de Currículo",
+            descricao = "Preparação para o mercado de trabalho",
+            data = "30/11/2026",
+            horario = "19:00",
+            local = "Auditório do Campus",
+            categoria = "Carreira",
+            limiteVagas = 50,
+            inscritos = 12,
+            endereco = "Rua Universitária, 100",
+            imagemUrl = "https://example.com/evento.jpg",
+            status = "publicado"
+        )
+
+        assertEquals("evento-1", evento.id)
+        assertEquals("Workshop de Currículo", evento.titulo)
+        assertEquals("Preparação para o mercado de trabalho", evento.descricao)
+        assertEquals("30/11/2026", evento.data)
+        assertEquals("19:00", evento.horario)
+        assertEquals("Auditório do Campus", evento.local)
+        assertEquals("Carreira", evento.categoria)
+        assertEquals(50, evento.limiteVagas)
+        assertEquals(12, evento.inscritos)
+        assertEquals("Rua Universitária, 100", evento.endereco)
+        assertEquals("https://example.com/evento.jpg", evento.imagemUrl)
+        assertEquals("publicado", evento.status)
+    }
+
+    @Test
     fun eventoComVagasRetornaVerdadeiro() {
         assertTrue(EventoRegras.temVagas(5, 10))
     }
